@@ -6,11 +6,11 @@ App works only with the players that use MediaController which means that it sho
 ## Installation
 
 App requires five permissions:
-	- Notification access to be able to read media metadata.
-	- Display over other apps to properly display titles.
-	- Battery optimization to keep service alive.
-	- Phone state to properly remove view on phone calls.
-	- Call logs to open app with dialer's "secret code"
+* Notification access to be able to read media metadata.
+* Display over other apps to properly display titles.
+* Battery optimization to keep service alive.
+* Phone state to properly remove view on phone calls.
+* Call logs to open app with dialer's "secret code"
 
 Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you have a problem with Restricted Setting pop-up.
 
