@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Display Media Titles</string>
+    
+    <string name="margin">Caption margin</string>
+    <string name="width">Caption width</string>
+    <string name="set_margin">Set margin</string>
+    <string name="set_width">Set width</string>
+    <string name="display_ui">Display UI:</string>
+
+    <string name="permissions">Required permissions:</string>
+    <string name="read_phone_state">Read phone state</string>
+    <string name="outgoing_calls">Call logs</string>
+    <string name="notification_listener">Notification listener</string>
+    <string name="battery_optimization">Battery optimization</string>
+    <string name="draw_over_apps">Draw over other apps</string>
+</resources>

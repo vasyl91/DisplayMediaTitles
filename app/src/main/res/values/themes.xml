@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DisplayMediaTitles" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">"#D6C08A"</item>
+        <item name="android:windowSplashScreenBackground">"#F8EECF"</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">"#D6C08A"</item>
+        <item name="android:windowBackground">"#F8EECF"</item>
+    </style>
+
+    <style name="Theme.DisplayMediaTitles" parent="Base.Theme.DisplayMediaTitles" />
+</resources>

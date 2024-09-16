@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F8EECF"
+            android:orientation="vertical" >
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#F8EECF"
+            android:orientation="horizontal"
+            android:gravity="start | center" >
+
+            <TextView
+                android:id="@+id/margin"
+                android:text="@string/margin"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/available_margin"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="5dp"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="#F8EECF"
+            android:orientation="horizontal"
+            android:gravity="center" >
+
+            <EditText
+                android:id="@+id/edit_margin"
+                android:textColor="@color/black"
+                android:layout_width="70dp"
+                android:layout_height="57dp"
+                android:layout_marginBottom="4dp"
+                android:elevation="2dp"
+                android:ems="10"
+                android:gravity="bottom | center"
+                android:inputType="number"
+                android:maxLength="4"
+                android:maxLines="1"
+                android:hint="margin"
+                tools:ignore="SpeakableTextPresentCheck">
+
+                <requestFocus />
+            </EditText>
+
+            <Button
+                android:id="@+id/set_margin_button"
+                android:text="@string/set_margin"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:layout_width="250dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="7dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:onClick="setMarginButton" />
+
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#F8EECF"
+            android:orientation="horizontal"
+            android:gravity="start | center" >
+
+            <TextView
+                android:id="@+id/width"
+                android:text="@string/width"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/available_width"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="5dp"
+                android:singleLine="true" />
+        </LinearLayout>
+        
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="#F8EECF"
+            android:orientation="horizontal"
+            android:gravity="center" >
+
+            <EditText
+                android:id="@+id/edit_width"
+                android:textColor="@color/black"
+                android:layout_width="70dp"
+                android:layout_height="57dp"
+                android:layout_marginBottom="4dp"
+                android:elevation="2dp"
+                android:ems="10"
+                android:gravity="bottom | center"
+                android:inputType="number"
+                android:maxLength="4"
+                android:maxLines="1"
+                android:hint="width"
+                tools:ignore="SpeakableTextPresentCheck">
+
+                <requestFocus />
+            </EditText>
+
+            <Button
+                android:id="@+id/set_width_button"
+                android:textColor="@color/black"
+                android:text="@string/set_width"
+                android:textSize="15sp"
+                android:layout_width="250dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="7dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:onClick="setWidthButton" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F8EECF"
+            android:gravity="start | center"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/display_ui_text"
+                android:text="@string/display_ui"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:gravity="start | center"
+                android:singleLine="true" />
+
+            <CheckBox                 
+                android:id="@+id/display_ui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="start | center"
+                android:onClick="setDisplayUI"/> 
+
+        </LinearLayout> 
+
+        <TextView
+            android:id="@+id/permissions"
+            android:text="@string/permissions"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginStart="20dp"
+            android:singleLine="true" />
+
+        <Button
+            android:id="@+id/read_phone_state_button"
+            android:text="@string/read_phone_state"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="7dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:onClick="phoneStateButton" />
+
+        <Button
+            android:id="@+id/outgoing_calls_button"
+            android:text="@string/outgoing_calls"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="7dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:onClick="outgoingCallsButton" />
+
+        <Button
+            android:id="@+id/notification_listener_button"
+            android:text="@string/notification_listener"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:onClick="notificationButton" />
+
+        <Button
+            android:id="@+id/battery_optimization_button"
+            android:text="@string/battery_optimization"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:onClick="batteryButton" />
+        
+        <Button
+            android:id="@+id/draw_over_apps_button"
+            android:text="@string/draw_over_apps"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:onClick="drawOverAppsButton" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
