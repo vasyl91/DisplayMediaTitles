@@ -33,11 +33,7 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 	
 	To get the application's view please open the dialer and type `*#*#3368#*#*` (if it doesn't work with your stock dialer then please install [Phone by Google](https://play.google.com/store/apps/details?id=com.google.android.dialer&hl=en_US)), the app should open it's MainActivity. It is also possible to have the same effect by revoking one of the permissions or in case of non-system app, not to grant it on the first start  (i.e. display over other apps - remember to grant it back to see the result). Revoking notification access might result in the app's crash. User will be able to grant previously revoked permission by pressing according button which glares red if permission is denied.
 
-<details>
-
 ![](./images/4.png) 
-
-</details>
 
 ## Generating app in Android Studio
 
