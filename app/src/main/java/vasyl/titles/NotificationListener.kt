@@ -189,6 +189,7 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
+    @Suppress("UNNECESSARY_SAFE_CALL")
     @SuppressLint("InternalInsetResource", "DiscouragedApi")
     fun setStatus() {
         if (ll?.windowToken == null) {
@@ -240,11 +241,28 @@ class NotificationListener : NotificationListenerService() {
                 }
 
                 val song = meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
-                val artist = meta?.getString(MediaMetadata.METADATA_KEY_AUTHOR)
-                tv.text = if (artist != null) "$song - $artist" else song
+                var artist = meta?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+                if(artist == null || artist?.isEmpty() == true){
+                    artist = meta?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+                }
+                if(artist == null || artist?.isEmpty() == true) {
+                    artist = meta?.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+                }
+                if(artist == null || artist?.isEmpty() == true) {
+                    artist = meta?.getString(MediaMetadata.METADATA_KEY_WRITER)
+                }
+                if(artist == null || artist?.isEmpty() == true) {
+                    artist = meta?.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+                } 
 
+                if (artist != null) {
+                    if (artist?.isEmpty() == false && song!!.contains(artist) == false) {
+                        tv.text = "$artist - $song"
+                    }
+                } else {
+                    tv.text = song
+                }
                 ll?.addView(tv)
-
                 windowManager.addView(ll, parameters)
                 paused = false
             } catch (e: IllegalArgumentException) {

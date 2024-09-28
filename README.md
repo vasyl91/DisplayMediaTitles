@@ -26,12 +26,16 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 	Permissions for system apps should be granted automatically.
 	Use `uninstaller.zip` to remove the app.
 
+* Opening app:
+
+	Please keep in mind that this app aims to work in the background therefore it minimizes after having all permissions granted and checked "Display UI" CheckBox. I made this function in case it's necessary to mark the app in the system settings as the one that's meant to run at the device boot/wake from sleep. Leave the checkbox unchecked if it's not necessary.
+	
+	To get the application's view please open the dialer and type `*#*#3368#*#*` (if it doesn't work with your stock dialer then please install [Phone by Google](https://play.google.com/store/apps/details?id=com.google.android.dialer&hl=en_US)), the app should open it's MainActivity. It is also possible to have the same effect by revoking one of the permissions or in case of non-system app, not to grant it on the first start  (i.e. display over other apps - remember to grant it back to see the result). Revoking notification access might result in the app's crash. User will be able to grant previously revoked permission by pressing according button which glares red if permission is denied.
+
 * Setting view parameters:
 
 	Very simple but intuitive layout allows to set left margin and width of the view depending on the device display width. Try it with long titles for proper setting.
-	Please keep in mind that this app aims to work in the background therefore it minimizes after having all permissions granted and checked "Display UI" CheckBox. 
-	
-	To get the application's view please open the dialer and type `*#*#3368#*#*` (if it doesn't work with your stock dialer then please install [Phone by Google](https://play.google.com/store/apps/details?id=com.google.android.dialer&hl=en_US)), the app should open it's MainActivity. It is also possible to have the same effect by revoking one of the permissions or in case of non-system app, not to grant it on the first start  (i.e. display over other apps - remember to grant it back to see the result). Revoking notification access might result in the app's crash. User will be able to grant previously revoked permission by pressing according button which glares red if permission is denied.
+
 
 ![](./images/4.png) 
 
