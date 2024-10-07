@@ -2,7 +2,7 @@
 
 Android app for FYT displaying media titles on status bar. It displays also artist name if it's present in the metadata. Should work on Android 8 and above. Tested on Android 10 and 14.
 App works with the players that use MediaController which means that it should get along with most of the available music apps. 
-It also supports original FYT player but this requires a simple launcher modification.
+It also supports original FYT player but this requires a simple [launcher modification](./launcher_cooker/README_LAUNCHER.md)
 
 ## Installation
 
