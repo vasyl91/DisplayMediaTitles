@@ -59,7 +59,7 @@ For non-system app remove `android:sharedUserId="android.uid.system"` from `Andr
 [<img src="./images/6.png" width="50%">](./images/6.png)[<img src="./images/7.png" width="50%">](./images/7.png)
 [<img src="./images/8.png" width="50%">](./images/8.png)
 
-## Modified Launchers
+## Modified Launchers allowing to display stock player media data
 
 **[HERE](./launcher_cooker/README_LAUNCHER.md) is a full guide how to easily modify most of the existing launchers.**
 
