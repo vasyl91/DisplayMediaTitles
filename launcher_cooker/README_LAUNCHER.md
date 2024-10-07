@@ -8,7 +8,7 @@
 
 4. Now you should see the folder `Launcher` containing disassembled launcher app. Go to the directory `Launcher\smali\com\fyt\car` and open `MusicService.smali` with text editor (i.e. Notepad++).
 
-5. Compare the code to the following examples. If it looks like on this [screenshot](./images/smali1.png) then you can proceed to the next step. If it looks like [that](./images/smali2.png) then it means that the code in your launcher is [obfuscated](https://www.google.com/search?q=obfuscated+code) and there's little we can do. Simply choose another launcher.
+5. Compare the code to the following examples. If it looks like on this [screenshot](https://github.com/vasyl91/DisplayMediaTitles/blob/main/images/smali1.png?raw=true) then you can proceed to the next step. If it looks like [that](https://github.com/vasyl91/DisplayMediaTitles/blob/main/images/smali2.png?raw=true) then it means that the code in your launcher is [obfuscated](https://www.google.com/search?q=obfuscated+code) and there's little we can do. Simply choose another launcher.
 
 6. Download and unpack [launcher_cooker.rar](https://github.com/vasyl91/DisplayMediaTitles/releases/download/launchers/launcher_cooker.rar). Copy and paste `MusicService.smali` to the unpacked `launcher_cooker` folder (it should be in the same folder with `additional_method.smali` and `launcher_cooker.py`).
 
@@ -28,9 +28,9 @@
 
 	2. If it's your first time with Android then you can either install [Android Studio](https://developer.android.com/studio?hl=en) and do previous step or just set smaller packege available to download [here](https://androidsdkmanager.azurewebsites.net/build_tools.html) without downloading Android Studio.
 
-	3. If you chose to download smaller package then create such directory `C:\Users\<your_user-name>\AppData\Local\Android\Sdk\build-tools\<build_number>` and unpack it's contents there so it looks like on this [screenshot](./images/buildtools.png). Copy-paste `apksigner.jar` as in subpoint 1.
+	3. If you chose to download smaller package then create such directory `C:\Users\<your_user-name>\AppData\Local\Android\Sdk\build-tools\<build_number>` and unpack it's contents there so it looks like on this [screenshot](https://github.com/vasyl91/DisplayMediaTitles/blob/main/images/buildtools.png?raw=true). Copy-paste `apksigner.jar` as in subpoint 1.
 
-	4. [Create or edit](https://docs.oracle.com/cd/E83411_01/OREAD/creating-and-modifying-environment-variables-on-windows.htm#OREAD158) environment variable `PATH` for user and for system using this dir `%LOCALAPPDATA%\Android\Sdk\build-tools\<build_number>` axactly as on this [screenshot](./images/variablepath.png).
+	4. [Create or edit](https://docs.oracle.com/cd/E83411_01/OREAD/creating-and-modifying-environment-variables-on-windows.htm#OREAD158) environment variable `PATH` for user and for system using this dir `%LOCALAPPDATA%\Android\Sdk\build-tools\<build_number>` axactly as on this [screenshot](https://github.com/vasyl91/DisplayMediaTitles/blob/main/images/variablepath.png?raw=true).
 
 	5. If the substeps above don't work then you'll have to google it and solve proper Android SDK installation by yourself.
 
@@ -47,7 +47,7 @@
 
 	`C:\Users\<your_user-name>\AppData\Local\Android\Sdk\build-tools\<build_number>\apksigner sign --ks <your_directory>\launcher_signer\platform.jks launcher.apk`
 
-	`PowerShell` will ask you for the pasword, type `android` (it won't show up in the terminal) and press Enter. Here is the exemplary [screenshot](./images/powershell.png).
+	`PowerShell` will ask you for the pasword, type `android` (it won't show up in the terminal) and press Enter. Here is the exemplary [screenshot](https://github.com/vasyl91/DisplayMediaTitles/blob/main/images/powershell.png?raw=true).
 
 	<code style="color : red">!!! Remember to replace **<your_user-name>**, **<build_number>** and **<your_directory>** with proper content (see the example screenshots) !!!</code>
 
