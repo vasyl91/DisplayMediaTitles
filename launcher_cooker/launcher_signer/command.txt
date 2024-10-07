@@ -1,0 +1,5 @@
+apksigner sign --ks <your_directory>\launcher_signer\platform.jks Launcher.apk
+
+C:\Users\<your_user-name>\AppData\Local\Android\Sdk\build-tools\<build_number>\apksigner sign --ks <your_directory>\launcher_signer\platform.jks Launcher.apk
+
+password: android

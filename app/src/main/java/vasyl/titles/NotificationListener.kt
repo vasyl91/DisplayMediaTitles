@@ -1,9 +1,11 @@
 package vasyl.titles
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.graphics.Color
@@ -13,7 +15,10 @@ import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.os.Build
+import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.service.notification.NotificationListenerService
 import android.text.TextUtils
 import android.view.Gravity
@@ -21,6 +26,8 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
+import java.io.File
+import kotlin.math.abs
 
 @Suppress("DEPRECATION")
 class NotificationListener : NotificationListenerService() {
@@ -30,20 +37,36 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var mediaSessionManager: MediaSessionManager
     private lateinit var settings: SharedPreferences
     private lateinit var windowManager: WindowManager
-
-    private var controllers: MutableList<MediaController>? = null
+    
+    private var up: Int = 0
+    private var down: Int = 0
+    private var size: Int = 16
+    private var width: Int = 900
+    private var marginLeft: Int = 255
+    private var typefaceInt: Int = 0
     private var overlayParam: Int = 0
+    private var statusBarHeight: Int = 0
+    private var song: String? = ""
+    private var artist: String? = ""
+    private var statusColor = "#FFFFFF"
+    private var paused: Boolean = false
+    private var statusRemoved: Boolean = false
+    private var controllers: MutableList<MediaController>? = null
     private var ll: LinearLayout? = null
     private var mediaController: MediaController? = null
     private var meta: MediaMetadata? = null
-    private var paused: Boolean = false
-    private var statusRemoved: Boolean = false
-    
     private val componentName = ComponentName("vasyl.titles", "vasyl.titles.NotificationListener")
 
-    var WIDTH = 400
-    var MARGIN_LEFT = 280
-    var DISPLAY_UI = true
+    private var fytState: Boolean = false
+    private var fytSet: Boolean = false
+    private var musicName: String? = ""
+    private var authorName: String? = ""
+    private var album: String? = ""
+    private var path: String? = ""
+    private var fytData: Int = 1
+    private var fytAllowed: Boolean = true // FYT sometimes updates data with some delay. This Boolean exist to not to interrupt changed media source.   
+
+    var displayUI: Boolean = true
 
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
@@ -51,22 +74,27 @@ class NotificationListener : NotificationListenerService() {
             mediaSessionManager.removeOnActiveSessionsChangedListener(it)
         }
         handler.removeCallbacks(runTask)
-        ll?.let {
-            windowManager.removeViewImmediate(it)
-            ll = null
+        if (!fytState) {
+            removeWindowView()
         }
         requestRebind(ComponentName(this, NotificationListenerService::class.java))
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
         super.onCreate()
         this.context = this
 
-        settings = getSharedPreferences("savedInts", 0)
-        DISPLAY_UI = settings.getBoolean("UI", true)
+        settings = getSharedPreferences("savedPrefs", 0)    
+        displayUI = settings.getBoolean("UI", true)
+        fytData = settings.getInt("fytData", 1)
 
         statusRemoved = false
         paused = false
+
+        
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId > 0) statusBarHeight = resources.getDimensionPixelSize(resourceId)
 
         overlayParam = if (isAppSystem(this)) {
             WindowManager.LayoutParams.TYPE_SYSTEM_ERROR
@@ -82,11 +110,7 @@ class NotificationListener : NotificationListenerService() {
         mediaController?.let {
             it.registerCallback(callback)
             meta = it.metadata
-            ll?.let {
-                windowManager.removeViewImmediate(it)
-                ll = null
-            }
-            setStatus()
+            setStatus(0)
         }
 
         val phoneIntent = Intent(this, PhoneStateBroadcastReceiver::class.java)
@@ -97,9 +121,46 @@ class NotificationListener : NotificationListenerService() {
 
         handler = Handler()
         handler.post(runTask)
-    }    
 
-    fun isAppSystem(context: Context): Boolean {
+        val intentFilter = IntentFilter("titlesReceiver")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(fytReceiver, intentFilter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(fytReceiver, intentFilter)
+        }
+    }  
+
+    private val fytReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == "titlesReceiver") {
+                val bundle: Bundle? = intent.extras!!
+                fytState = bundle?.getBoolean("play_state")!!
+                authorName = bundle.getString("play_artist")!!
+                album = bundle.getString("play_album")!!                
+                path = bundle.getString("play_path")!!
+                musicName = bundle.getString("title")!!
+                val file = File(path!!)
+                val filename = file.getName()
+                val pathName = filename.substring(0, filename.lastIndexOf("."))
+                if (musicName!!.isNotEmpty() && musicName != "Unknown" && song != musicName && song != pathName) {
+                    fytSet = false
+                } 
+                if(fytState && !fytSet && fytAllowed  && musicName!!.isNotEmpty() && musicName != "Unknown") {   
+                    fytSet = true
+                    setStatus(1)             
+                }
+                if (!fytState && fytSet) {
+                    val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                    if (!am.isMusicActive) {
+                        removeWindowView()                        
+                    }
+                    fytSet = false
+                }
+            }
+        }
+    }  
+
+    private fun isAppSystem(context: Context): Boolean {
         val pm = context.packageManager
         val appInfo = pm.getApplicationInfo(context.packageName, 0)
         return (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0 || (appInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
@@ -110,43 +171,49 @@ class NotificationListener : NotificationListenerService() {
             mediaSessionManager.removeOnActiveSessionsChangedListener(it)
         }
         handler.removeCallbacks(runTask)
-        ll?.let {
-            windowManager.removeViewImmediate(it)
-            ll = null
-        }
+        removeWindowView()
+        unregisterReceiver(fytReceiver)
     }
 
     private val runTask = object : Runnable {
         override fun run() {
             val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
             if (!am.isMusicActive || PhoneListener.CALLING) {
-                removeWindowView()
+                if (!fytState) {
+                    removeView()
+                }  
             }
             if (am.isMusicActive && ll == null) {
-                /* onActiveSessionsChanged switches between sources flawlessly as long as music continues to play,
-                it doesn't switch when user had paused previous music source before playing the new one */
+                // onActiveSessionsChanged switches between sources flawlessly as long as music continues to play,
+                // it doesn't switch when user had paused previous music source before playing the new one
+                checkActiveSessions()
+            }
+            if (am.isMusicActive && fytState) {
+                // sometimes when fyt player is still active MediaController looses active session
                 checkActiveSessions()
             }
             handler.postDelayed(this, 10)
         }
     }
 
-    fun removeWindowView() {
+    fun removeView() {
         if (!statusRemoved) {
             statusRemoved = true // prevents running more than once in runTask
-            ll?.let {
-                windowManager.removeViewImmediate(it)
-                ll = null
-            }
+            removeWindowView()
+        }
+    }
+
+    fun removeWindowView() {
+        ll?.let {
+            windowManager.removeViewImmediate(it)
+            ll = null
         }
     }
 
     private var callback: MediaController.Callback = object : MediaController.Callback() {
         override fun onSessionDestroyed() {
-            statusRemoved = false
-            ll?.let {
-                windowManager.removeViewImmediate(it)
-                ll = null
+            if (!fytState) {
+                removeWindowView() 
             }
             super.onSessionDestroyed()
         }
@@ -157,66 +224,74 @@ class NotificationListener : NotificationListenerService() {
             val currentState = state?.state
             if (currentState == 2 && !paused) {
                 paused = true
-                statusRemoved = false
-                removeWindowView()
-            } else if (currentState == 3 && ll == null) {
-                statusRemoved = false
-                setStatus()
+                if (!fytState) {
+                    removeWindowView()   
+                }
+            } else if (currentState == 3) {
+                setStatus(2)
             }
         }
 
+        @Suppress("KotlinConstantConditions")
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
             if (meta == null) {
                 meta = metadata
-                ll?.let {
-                    windowManager.removeViewImmediate(it)
-                    ll = null
+                if (!fytState) {
+                    setStatus(2)   
                 }
-                setStatus()
             } else if (metadata != null && meta != null) {
                 // Check if the new title is different from the previous one
                 if (metadata.getString(MediaMetadata.METADATA_KEY_TITLE) != meta!!.getString(MediaMetadata.METADATA_KEY_TITLE)) {
-                    statusRemoved = false                       
                     meta = metadata
-                    ll?.let {
-                        windowManager.removeViewImmediate(it)
-                        ll = null
+                    if (!fytState) {
+                        setStatus(2)   
                     }
-                    setStatus()
                 }
             }
         }
     }
 
-    @Suppress("UNNECESSARY_SAFE_CALL")
-    @SuppressLint("InternalInsetResource", "DiscouragedApi")
-    fun setStatus() {
+    fun setStatus(mediaSource: Int) {
+        removeWindowView()
+        if (mediaSource == 2) {
+            fytState = false
+            fytSet = true
+        }
         if (ll?.windowToken == null) {
-            settings = getSharedPreferences("savedInts", 0)
-            if (settings.getInt("margin", 0) != 0) {
-                MARGIN_LEFT = settings.getInt("margin", 0)
-            }
+            val marginPercentage = settings.getInt("marginPercentage", 255)
+            val widthPercentage = settings.getInt("widthPercentage", 900)
+            marginLeft = settings.getInt("margin", marginPercentage)
+            width = settings.getInt("width", widthPercentage)
+            up = settings.getInt("up", 0)
+            down = settings.getInt("down", 0)
+            size = settings.getInt("size", 16)
+            typefaceInt = settings.getInt("typeface", 0)
+            settings.getString("color", "#FFFFFF")?.let { color -> statusColor = color }
+            fytData = settings.getInt("fytData", 1)
 
-            if (settings.getInt("width", 0) != 0) {
-                WIDTH = settings.getInt("width", 0)
-            }
-            
+            var numUp = 0
+            if (down > 0) {
+                numUp = abs(down)
+            } else if (up > 0) {
+                numUp = -abs(up)
+            } else if (up == 0 && down == 0) {
+                numUp = 0
+            }        
             try {
                 // Status bar
-                var statusBarHeight = 0
-                val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-                if (resourceId > 0) statusBarHeight = resources.getDimensionPixelSize(resourceId)
+                val height = if (size > 22) statusBarHeight + size else statusBarHeight
 
                 val parameters = WindowManager.LayoutParams(
-                    WIDTH, // width
-                    statusBarHeight,
+                    width,
+                    height,
                     overlayParam,
                     WindowManager.LayoutParams.TYPE_WALLPAPER or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                     PixelFormat.TRANSLUCENT
                 ).apply {
                     gravity = Gravity.TOP or Gravity.START
-                    x = MARGIN_LEFT // margin left
+                    x = marginLeft
+                    y = numUp
                 }
 
                 ll = LinearLayout(this).apply {
@@ -232,7 +307,9 @@ class NotificationListener : NotificationListenerService() {
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
-                    setTextColor(Color.WHITE)
+                    setTextColor(Color.parseColor(statusColor))
+                    textSize = (size).toFloat()
+                    setTypeface(null, typefaceInt)
                     gravity = Gravity.CENTER
                     ellipsize = TextUtils.TruncateAt.MARQUEE
                     marqueeRepeatLimit = -1
@@ -240,30 +317,57 @@ class NotificationListener : NotificationListenerService() {
                     isSelected = true
                 }
 
-                val song = meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
-                var artist = meta?.getString(MediaMetadata.METADATA_KEY_ARTIST)
-                if(artist == null || artist?.isEmpty() == true){
-                    artist = meta?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
-                }
-                if(artist == null || artist?.isEmpty() == true) {
-                    artist = meta?.getString(MediaMetadata.METADATA_KEY_AUTHOR)
-                }
-                if(artist == null || artist?.isEmpty() == true) {
-                    artist = meta?.getString(MediaMetadata.METADATA_KEY_WRITER)
-                }
-                if(artist == null || artist?.isEmpty() == true) {
-                    artist = meta?.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+                if (fytState && fytAllowed && (mediaSource == 0 || mediaSource == 1)) {
+                    if (fytData == 1) { // from metadata
+                        song = musicName
+                        artist = authorName
+                        if(artist?.isEmpty() == true || artist == "Unknown"){
+                            artist = album
+                        }       
+                    } else if (fytData == 2) { // from file title
+                        val file = File(path!!)
+                        val filename = file.getName()
+                        song = filename.substring(0, filename.lastIndexOf("."))
+                        artist = null
+                    }    
                 } 
 
+                if (!fytState && (mediaSource == 0 || mediaSource == 2))  {
+                    fytAllowed = false
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        fytAllowed = true
+                    }, 2000)
+                    song = meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
+                    artist = meta?.getString(MediaMetadata.METADATA_KEY_ARTIST) 
+                    if(artist == null || artist?.isEmpty() == true){
+                        artist = meta?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+                    }
+                    if(artist == null || artist?.isEmpty() == true) {
+                        artist = meta?.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+                    }
+                    if(artist == null || artist?.isEmpty() == true) {
+                        artist = meta?.getString(MediaMetadata.METADATA_KEY_WRITER)
+                    }
+                    if(artist == null || artist?.isEmpty() == true) {
+                        artist = meta?.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+                    }                   
+                }   
+               
                 if (artist != null) {
-                    if (artist?.isEmpty() == false && song!!.contains(artist) == false) {
-                        tv.text = "$artist - $song"
+                    if (artist!!.isNotEmpty()) {
+                        if (!song!!.contains(artist!!) && artist != "Unknown") {
+                            tv.text = getString(R.string.artist_and_song_str, "$artist", "$song")
+                        } else {
+                            tv.text = getString(R.string.song_str, "$song")
+                        }                       
                     }
                 } else {
-                    tv.text = song
+                    tv.text = getString(R.string.song_str, "$song")
                 }
+                
                 ll?.addView(tv)
                 windowManager.addView(ll, parameters)
+                statusRemoved = false
                 paused = false
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
@@ -285,14 +389,15 @@ class NotificationListener : NotificationListenerService() {
         return if (controllers.isNotEmpty()) controllers[0] else null
     }
 
-    private val sessionListener = object: MediaSessionManager.OnActiveSessionsChangedListener {
-        override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
+    private val sessionListener = MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
             if (controllers!!.isNotEmpty()) {
                 if (mediaController != null && controllers[0].sessionToken != mediaController?.sessionToken) {
                     // Detach current controller
                     mediaController?.unregisterCallback(callback)
                     mediaController = null
-                    removeWindowView()
+                    if (!fytState) {
+                        removeWindowView()
+                    }
                 }
 
                 if (mediaController == null) {
@@ -304,5 +409,4 @@ class NotificationListener : NotificationListenerService() {
                 }
             }
         }
-    }
 }

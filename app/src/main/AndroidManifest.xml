@@ -9,8 +9,10 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
@@ -18,7 +20,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />              
-    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <uses-feature android:name="android.hardware.telephony" 
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -30,6 +33,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DisplayMediaTitles"
         tools:targetApi="34"
+        android:hardwareAccelerated="true"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true" >
         <activity
@@ -42,7 +46,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".NotificationListener"
+        <service 
+            android:name=".NotificationListener"
             android:label="NotiListener"
             android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
@@ -58,7 +63,8 @@
                     <action android:name="android.intent.action.PHONE_STATE"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".SecretCode"
+        <receiver 
+            android:name=".SecretCode"
             android:label="CodeListener"
             android:enabled="true"
             android:exported="true">
@@ -66,6 +72,12 @@
                     <action android:name="android.provider.Telephony.SECRET_CODE"  />
                     <data android:scheme="android_secret_code" android:host="3368" /> 
             </intent-filter>
+        </receiver>
+        <receiver android:name=".Autostart"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>  
         </receiver>
     </application>
 
