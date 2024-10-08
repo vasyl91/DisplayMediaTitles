@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Display Media Titles</string>
+    
+    <string name="margin">제목 여백</string>
+    <string name="width">제목 너비</string>
+    <string name="set_margin">여백 설정</string>
+    <string name="available_margin">%1$s(available: %2$s):</string>
+    <string name="set_width">너비 설정</string>
+    <string name="available_width">%1$s(available: %2$s):</string>
+    <string name="set_font_color">설정</string>
+    <string name="reset_font_color">초기화</string>
+    <string name="position">제목 높이:</string>
+    <string name="center">중앙</string>
+    <string name="up">위</string>
+    <string name="up_var">%1$s</string>
+    <string name="down">아래</string>
+    <string name="down_var">%1$s</string>
+    <string name="font_size">폰트 크기:</string>
+    <string name="set_size">크기 설정</string>
+    <string name="font_color">폰트 색상:</string>
+    <string name="typeface">글꼴:</string>
+    <string name="normal">일반</string>
+    <string name="italic">기울임체</string>
+    <string name="bold">굵게</string>
+    <string name="fyt_display">FYT 미디어 데이터를 불러오기:</string>
+    <string name="fyt_meta">메타데이터</string>
+    <string name="fyt_file">파일 이름</string>
+    <string name="display_ui">UI 표시하기:</string>
+    <string name="autostart">부팅시 시작:</string>
+
+    <string name="song_str">%1$s</string>   
+    <string name="artist_and_song_str">%1$s - %2$s</string>
+
+    <string name="permissions">필요한 권한들:</string>
+    <string name="read_phone_state">휴대전화 상태 읽기</string>
+    <string name="outgoing_calls">통화 기록 읽기</string>
+    <string name="notification_listener">알림 접근 허용</string>
+    <string name="battery_optimization">배터리 최적화</string>
+    <string name="draw_over_apps">다른 앱 위에 표시</string>
+
+    <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
+    <string name="materialcolorpicker__inputColor">색상: </string>
+    <string name="materialcolorpicker__btnSelectColor">선택</string>
+    <string name="materialcolorpicker__hash" translatable="false">#</string>
+</resources>
