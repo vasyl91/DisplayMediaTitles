@@ -274,7 +274,7 @@ class MainActivity : AppCompatActivity() {
             margin = editMargin.text.toString().toInt()
             saveInt("margin", editMargin.text.toString().toInt())
             availableWidth = screenWidth - margin
-            mAvailableWidth.text = getString(R.string.available_width, "$availableWidth")
+            mAvailableWidth.text = getString(R.string.available_width, " ", "$availableWidth")
             editWidth.filters = arrayOf<InputFilter>(InputFilterMinMax("1", availableWidth.toString()))
 
             // Show toast
@@ -295,7 +295,7 @@ class MainActivity : AppCompatActivity() {
             width = editWidth.text.toString().toInt()
             saveInt("width", editWidth.text.toString().toInt())
             availableMargin = screenWidth - width
-            mAvailableMargin.text = getString(R.string.available_margin, "$availableMargin")
+            mAvailableMargin.text = getString(R.string.available_margin, " ", "$availableMargin")
             editMargin.filters = arrayOf<InputFilter>(InputFilterMinMax("1", availableMargin.toString()))
 
             // Show toast

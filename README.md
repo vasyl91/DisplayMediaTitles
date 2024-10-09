@@ -1,10 +1,10 @@
-# Display Media Titles 
+# Display Media Titles for FYT 7862/8581
 
-Android app for FYT displaying media titles on status bar. It displays also artist name if it's present in the metadata. Should work on Android 8 and above. Tested on Android 10 and 14.
+Android app for FYT displaying media titles on status bar. It displays also artist name if it's present in the metadata. Should work on Android 8 and above. Tested on Android 10 on FYT UIS7862 and on Android 14 on phone.
 
 App works with the players that use MediaController which means that it should get along with most of the available music apps. 
 
-It also supports original FYT player but this requires a simple [launcher modification](./launcher_cooker/README_LAUNCHER.md)
+It also supports original FYT player but this requires a simple [launcher modification](./launcher_cooker/README_LAUNCHER.md). You can also use modified [launchers](#modified-launchers-allowing-to-display-stock-player-media-data).
 
 ## Installation
 
@@ -19,21 +19,28 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 
 * Non-system app (works on phones, tablets and FYT):
 
-	Download and install `display_media_titles_phone.apk` file. This version due to android restrictions will display titles only if a launcher has a fully transparent status bar, on FYT it might look like there's a shadow on it (it's probably hardcoded, the shadow persists regardless the launcher type/mod).
+	Download and install `display_media_titles_phone.apk` file. This version due to android restrictions will display titles only if the launcher has a fully transparent status bar, on FYT it might look like there's a shadow on it (it's probably hardcoded, the shadow persists regardless the launcher type/mod).
 	User will be prompted to grant permissions mentioned before on the first start. 
 	
-* System app (only for FYT):
-
-	Download `installer.zip`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds.
-	Works with every launcher and displays media data on top of everything (no shadow issue).
-	Permissions for system apps should be granted automatically.
-	Use `uninstaller.zip` to remove the app.
-
-* Opening app:
-
-	This app aims to work in the background therefore it minimizes after having all permissions granted and checked "Display UI" CheckBox. I made this function in case it's necessary to mark the app in the FYT system settings as the one that's meant to run at the device boot/wake from sleep. Might be also useful while using in-app autostart option. Leave the checkbox unchecked if it's not necessary.
+* System app (only for devices using standard Google keystore i.e. FYT):
 	
-	To get the application's view please open the dialer and type `*#*#3368#*#*` (if it doesn't work with your stock dialer then please install [Phone by Google](https://play.google.com/store/apps/details?id=com.google.android.dialer&hl=en_US)), the app should open it's MainActivity. It is also possible to have the same effect by revoking one of the permissions or in case of non-system app, not to grant it on the first start  (i.e. display over other apps - remember to grant it back to see the result). Revoking notification access might result in the app's crash. User will be able to grant previously revoked permission by pressing according button which glares red if permission is denied.
+	- FYT 7862/8581:
+
+		Download `installer.zip`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds.
+		Works with every launcher and displays media data on top of everything (no shadow issue).
+		Permissions for system apps should be granted automatically.
+		
+		Use `uninstaller.zip` to remove the app.
+
+	- Other devices using standard Google keystore:
+
+		Install `vasyl.titles.apk` from `installer\_displaymediatitles\vasyl.titles` and [convert it to system app](https://www.google.com/search?client=firefox-b-d&q=how+to+convert+app+to+stsyem).
+
+* Opening app interface:
+
+	This app aims to work in the background therefore it minimizes after having all permissions granted and unchecked "Display UI" CheckBox. I made this function in case it's necessary to mark the app in the FYT system settings as the one that's meant to run at the device boot/wake from sleep. Might be also useful while using in-app autostart option. 
+	
+	To get the application's view after unchecking "Display UI" CheckBox, please open the dialer and type `*#*#3368#*#*` (if it doesn't work with your stock dialer then install [Phone by Google](https://play.google.com/store/apps/details?id=com.google.android.dialer&hl=en_US)), the app should open it's MainActivity. It is also possible to have the same effect by revoking one of the permissions or in case of non-system app, not to grant it on the first start  (i.e. display over other apps - remember to grant it back to see the result). Revoking notification access might result in the app's crash. User will be able to grant previously revoked permission by pressing according button which glares red if permission is denied.
 
 * Setting view parameters:
 
@@ -55,11 +62,13 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 Clone repository and use `keystore.jks` located in `DisplayMediaTitles\app`. Choose exisiting android key alias with password `android`. 
 For non-system app remove `android:sharedUserId="android.uid.system"` from `AndroidManifest.xml`.
 
+FYT uses standard Google keystore, if you want to generate app that will work as a system app on OS that has been signed with different keystore then make sure to use that keystore.
+
 ## Gallery
 
 [<img src="./images/4.png" width="50%">](./images/4.png)[<img src="./images/5.png" width="50%">](./images/5.png)
 [<img src="./images/6.png" width="50%">](./images/6.png)[<img src="./images/7.png" width="50%">](./images/7.png)
-[<img src="./images/8.png" width="50%">](./images/8.png)
+[<img src="./images/8.png" width="50%">](./images/8.png)[<img src="./images/9.png" width="50%">](./images/9.png)
 
 ## Modified Launchers allowing to display stock player media data
 
