@@ -352,21 +352,21 @@ class NotificationListener : NotificationListenerService() {
                         artist = meta?.getString(MediaMetadata.METADATA_KEY_COMPOSER)
                     }                   
                 }   
-               
-                if (artist != null) {
-                    if (artist!!.isNotEmpty()) {
-                        if (!song!!.contains(artist!!) && artist != "Unknown") {
-                            tv.text = getString(R.string.artist_and_song_str, "$artist", "$song")
-                        } else {
-                            tv.text = getString(R.string.song_str, "$song")
-                        }                       
+                if (song != null) {
+                    if (artist != null) {
+                        if (artist!!.isNotEmpty()) {
+                            if (!song!!.contains(artist!!) && artist != "Unknown") {
+                                tv.text = getString(R.string.artist_and_song_str, "$artist", "$song", " ")
+                            } else {
+                                tv.text = getString(R.string.song_str, "$song", " ")
+                            }                       
+                        }
+                    } else {
+                        tv.text = getString(R.string.song_str, "$song", " ")
                     }
-                } else {
-                    tv.text = getString(R.string.song_str, "$song")
+                    ll?.addView(tv)
+                    windowManager.addView(ll, parameters)
                 }
-                
-                ll?.addView(tv)
-                windowManager.addView(ll, parameters)
                 statusRemoved = false
                 paused = false
             } catch (e: IllegalArgumentException) {
