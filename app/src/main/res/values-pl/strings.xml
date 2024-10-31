@@ -15,7 +15,7 @@
     <string name="up_var">%1$s</string>
     <string name="down">Dół</string>
     <string name="down_var">%1$s</string>
-    <string name="font_size">Wielkość czcionki:</string>
+    <string name="font_size">Wielkość czcionki (max. 30):</string>
     <string name="set_size">Ustaw wielkość</string>
     <string name="font_color">Kolor czcionki:</string>
     <string name="typeface">Czcionka:</string>
@@ -30,6 +30,7 @@
 
     <string name="song_str">%1$s</string>   
     <string name="artist_and_song_str">%1$s - %2$s</string>
+    <string name="space">\u0020</string>
 
     <string name="permissions">Wymagane uprawnienia:</string>
     <string name="read_phone_state">Informacje o telefonie</string>

@@ -25,6 +25,7 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Suppress("DEPRECATION", "UNUSED_PARAMETER")
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mDrawOverAppsButton: Button
     private lateinit var settings: SharedPreferences
     private lateinit var colorPicker: ColorPicker
+    //private lateinit var context: Context
 
     private var screenWidth: Int = 0
     private var margin: Int = 255
@@ -90,6 +92,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)   
+        //this.context = this
 
         // Display values
         val displayMetrics = DisplayMetrics()
@@ -123,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         // Caption margin, available margin and according button
         availableMargin = screenWidth - width
         editMargin = findViewById(R.id.edit_margin)
-        editMargin.setText(margin.toString())
+        editMargin.setText(String.format(Locale.US, "%d", margin))
         editMargin.filters = arrayOf(InputFilterMinMax("1", availableMargin.toString()))
         editMargin.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -138,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         // Caption width, available width and according button
         availableWidth = screenWidth - margin
         editWidth = findViewById(R.id.edit_width)
-        editWidth.setText(width.toString())
+        editWidth.setText(String.format(Locale.US, "%d", width))
         editWidth.filters = arrayOf(InputFilterMinMax("1", availableWidth.toString()))
         editWidth.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -167,7 +170,7 @@ class MainActivity : AppCompatActivity() {
 
         // Font size
         editSize = findViewById(R.id.edit_size)
-        editSize.setText(size.toString())
+        editSize.setText(String.format(Locale.US, "%d", size))
         editSize.filters = arrayOf<InputFilter>(InputFilterMinMax("1", "30"))
         editSize.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -579,6 +582,7 @@ class MainActivity : AppCompatActivity() {
             if (allPermissionsGranted && !displayUi) {
                 // Run only once
                 if (atomicInitialized.compareAndSet(false, true)) {
+                    //Toast.makeText(context, "Type *#*#3368#*#* in the dialer to open the UI.", Toast.LENGTH_LONG).show()
                     minimize()
                 }                
             } 

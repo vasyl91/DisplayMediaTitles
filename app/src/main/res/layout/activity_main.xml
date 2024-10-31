@@ -65,7 +65,7 @@
                     android:maxLength="4"
                     android:maxLines="1"
                     android:hint="margin"
-                    android:imeActionLabel="Set" 
+                    android:imeActionLabel="Set"
                     android:imeOptions="actionDone"
                     tools:ignore="SpeakableTextPresentCheck">
 
@@ -117,7 +117,7 @@
                     android:layout_marginBottom="5dp"
                     android:singleLine="true" />
             </LinearLayout>
-            
+
             <LinearLayout android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:background="#F8EECF"

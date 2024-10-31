@@ -15,7 +15,7 @@
     <string name="up_var">%1$s</string>
     <string name="down">Down</string>
     <string name="down_var">%1$s</string>
-    <string name="font_size">Font size:</string>
+    <string name="font_size">Font size (max. 30):</string>
     <string name="set_size">Set size</string>
     <string name="font_color">Font color:</string>
     <string name="typeface">Typeface:</string>
@@ -28,8 +28,9 @@
     <string name="display_ui">Display UI:</string>
     <string name="autostart">Start on boot:</string>
 
-    <string name="song_str">%1$s%2$s</string>   
-    <string name="artist_and_song_str">%1$s - %2$s%3$s</string>
+    <string name="song_str">%1$s</string>   
+    <string name="artist_and_song_str">%1$s - %2$s</string>
+    <string name="space">\u0020</string>
 
     <string name="permissions">Required permissions:</string>
     <string name="read_phone_state">Read phone state</string>

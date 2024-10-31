@@ -15,7 +15,7 @@
     <string name="up_var">%1$s</string>
     <string name="down">아래</string>
     <string name="down_var">%1$s</string>
-    <string name="font_size">폰트 크기:</string>
+    <string name="font_size">폰트 크기 (max. 30):</string>
     <string name="set_size">크기 설정</string>
     <string name="font_color">폰트 색상:</string>
     <string name="typeface">글꼴:</string>
@@ -30,6 +30,7 @@
 
     <string name="song_str">%1$s</string>   
     <string name="artist_and_song_str">%1$s - %2$s</string>
+    <string name="space">\u0020</string>
 
     <string name="permissions">필요한 권한들:</string>
     <string name="read_phone_state">휴대전화 상태 읽기</string>
