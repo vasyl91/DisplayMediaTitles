@@ -18,6 +18,7 @@
     <string name="font_size">Wielkość czcionki (max. 30):</string>
     <string name="set_size">Ustaw wielkość</string>
     <string name="font_color">Kolor czcionki:</string>
+    <string name="bg_color">Kolor tła:</string>
     <string name="typeface">Czcionka:</string>
     <string name="normal">Normalna</string>
     <string name="italic">Kursywa</string>

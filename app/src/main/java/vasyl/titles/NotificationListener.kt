@@ -49,6 +49,7 @@ class NotificationListener : NotificationListenerService() {
     private var song: String? = ""
     private var artist: String? = ""
     private var statusColor = "#FFFFFF"
+    private var statusBgColor = "#FFFFFF00"
     private var paused: Boolean = false
     private var statusRemoved: Boolean = false
     private var controllers: MutableList<MediaController>? = null
@@ -268,6 +269,7 @@ class NotificationListener : NotificationListenerService() {
             size = settings.getInt("size", 16)
             typefaceInt = settings.getInt("typeface", 0)
             settings.getString("color", "#FFFFFF")?.let { color -> statusColor = color }
+            settings.getString("bg_color", "#FFFFFF00")?.let { color -> statusBgColor = color }
             fytData = settings.getInt("fytData", 1)
 
             var numUp = 0
@@ -295,7 +297,7 @@ class NotificationListener : NotificationListenerService() {
                 }
 
                 ll = LinearLayout(this).apply {
-                    setBackgroundColor(Color.TRANSPARENT)
+                    setBackgroundColor(returnColor(statusBgColor))
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.MATCH_PARENT
@@ -372,6 +374,12 @@ class NotificationListener : NotificationListenerService() {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun returnColor(colorString: String): Int {
+        if (colorString == "transparent") {
+            return Color.TRANSPARENT
+        } else return Color.parseColor(colorString)
     }
 
     fun checkActiveSessions() {

@@ -26,10 +26,27 @@ android {
             )
         }
     }
+
+    signingConfigs {
+        getByName("debug") {
+            keyAlias = "android"
+            keyPassword = "android"
+            storeFile = file("../app/keystore.jks")
+            storePassword = "android"
+        }
+        create("release") {
+            keyAlias = "android"
+            keyPassword = "android"
+            storeFile = file("../app/keystore.jks")
+            storePassword = "android"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    
     kotlinOptions {
         jvmTarget = "1.8"
     }

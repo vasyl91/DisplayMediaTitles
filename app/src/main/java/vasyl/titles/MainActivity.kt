@@ -45,6 +45,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mSetColorButton: Button
     private lateinit var mResetColorButton: Button
 
+    private lateinit var mSetBgColorButton: Button
+    private lateinit var mResetBgColorButton: Button
+
     private lateinit var mUpButton: Button
     private lateinit var mCenterButton: Button
     private lateinit var mDownButton: Button
@@ -69,6 +72,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mDrawOverAppsButton: Button
     private lateinit var settings: SharedPreferences
     private lateinit var colorPicker: ColorPicker
+    private lateinit var bgColorPicker: ColorPicker
     //private lateinit var context: Context
 
     private var screenWidth: Int = 0
@@ -85,6 +89,7 @@ class MainActivity : AppCompatActivity() {
     private var typeface: Int = 0
     private var fytData: Int = 1
     private var statusButtonColor = "#FFFFFF"
+    private var statusBgButtonColor = "#FFFFFF"
     private var displayUi: Boolean = true
     private var autostart: Boolean = false
     private var allPermissionsGranted: Boolean = false
@@ -112,6 +117,9 @@ class MainActivity : AppCompatActivity() {
         size = settings.getInt("size", 16)
         settings.getString("color", "#FFFFFF")?.let { color ->
             statusButtonColor = color
+        }
+        settings.getString("bg_color", "#FFFFFF")?.let { color ->
+            statusBgButtonColor = color
         }
         defaultColorR = settings.getInt("red", 255)
         defaultColorG = settings.getInt("green", 255)
@@ -200,6 +208,33 @@ class MainActivity : AppCompatActivity() {
                 val layout = inflater.inflate(R.layout.toast, findViewById(R.id.toast_layout))
                 val text = layout.findViewById<TextView>(R.id.text)
                 val message = "Status color has been set! \nPause/play media or change \ncurrent track to see the result."
+                text.text = message
+                val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
+                toast.view = layout
+                toast.show()
+            }
+        })
+
+        // Background color picker
+        mSetBgColorButton = findViewById(R.id.set_bg_color)
+        mSetBgColorButton.setBackgroundColor(returnColor(statusBgButtonColor))
+        mResetBgColorButton = findViewById(R.id.reset_bg_color)
+        bgColorPicker = ColorPicker(this, defaultColorR, defaultColorG, defaultColorB)       
+        bgColorPicker.enableAutoClose()
+        bgColorPicker.setCallback(object : ColorPickerCallback {
+            override fun onColorChosen(@ColorInt color: Int) {
+                val editor = settings.edit()
+                editor.putString("bg_color", String.format("#%06X", (0xFFFFFF and color)))
+                editor.putInt("bg_red", Color.red(color))
+                editor.putInt("bg_green", Color.green(color))
+                editor.putInt("bg_blue", Color.blue(color))
+                editor.apply()
+                mSetBgColorButton.setBackgroundColor(color)
+                // Show toast
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.toast, findViewById(R.id.toast_layout))
+                val text = layout.findViewById<TextView>(R.id.text)
+                val message = "Background color has been set! \nPause/play media or change \ncurrent track to see the result."
                 text.text = message
                 val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
                 toast.view = layout
@@ -328,6 +363,29 @@ class MainActivity : AppCompatActivity() {
         editor.putInt("green", 255)
         editor.putInt("blue", 255)
         editor.apply()
+    }
+
+    fun setBgButton(v: View?) {
+        bgColorPicker.show()
+    }
+
+    fun resetBgButton(v: View?) {
+        mSetBgColorButton.setBackgroundColor(Color.TRANSPARENT)
+        defaultColorR = 255
+        defaultColorG = 255
+        defaultColorB = 255  
+        val editor = settings.edit()
+        editor.putString("bg_color", "transparent")
+        editor.putInt("red", 255)
+        editor.putInt("green", 255)
+        editor.putInt("blue", 255)
+        editor.apply()
+    }
+
+    private fun returnColor(colorString: String): Int {
+        if (colorString == "transparent") {
+            return Color.TRANSPARENT
+        } else return Color.parseColor(colorString)
     }
 
     fun upButton(v: View?) {

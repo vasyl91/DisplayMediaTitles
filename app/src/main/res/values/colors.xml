@@ -3,7 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primaryDark">#D6C08A</color>
-    <color name="primaryLight">#F8EECF</color>
+    <color name="primaryLight">#F8EECF</color>   
+    <color name="transparent">#FFFFFF00</color>
 
     <color name="materialcolorpicker__white">#ffffff</color>
     <color name="materialcolorpicker__red">#f44336</color>
