@@ -7,28 +7,35 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.PowerManager
 import android.provider.Settings
 import android.text.InputFilter
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.anggrayudi.storage.SimpleStorageHelper
+import com.anggrayudi.storage.file.getAbsolutePath
+import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
-@Suppress("DEPRECATION", "UNUSED_PARAMETER")
+@Suppress("DEPRECATION", "UNUSED_PARAMETER", "unused")
 class MainActivity : AppCompatActivity() {
    
     private lateinit var runnableHandler: Handler
@@ -58,6 +65,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mNormalButton: Button
     private lateinit var mItalicButton: Button
     private lateinit var mBoldButton: Button
+    private lateinit var mTtfButton: Button
+    private lateinit var mTtfUpButton: Button
+    private lateinit var mTtfCenterButton: Button
+    private lateinit var mTtfDownButton: Button
+    private lateinit var typefaceTextView: TextView  
+    private lateinit var typefaceLinearLayout: LinearLayout
 
     private lateinit var mFytMetaButton: Button
     private lateinit var mFytFileButton: Button
@@ -70,10 +83,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mBatteryButton: Button
     private lateinit var mNotificationButton: Button
     private lateinit var mDrawOverAppsButton: Button
+    private lateinit var mStoragePermissionsButton: Button
     private lateinit var settings: SharedPreferences
     private lateinit var colorPicker: ColorPicker
     private lateinit var bgColorPicker: ColorPicker
-    //private lateinit var context: Context
 
     private var screenWidth: Int = 0
     private var margin: Int = 255
@@ -82,10 +95,15 @@ class MainActivity : AppCompatActivity() {
     private var availableWidth: Int = 0
     private var numUp: Int = 0
     private var numDown: Int = 0
+    private var ttfNumUp: Int = 0
+    private var ttfNumDown: Int = 0
     private var size: Int = 16
     private var defaultColorR: Int = 255
     private var defaultColorG: Int = 255
-    private var defaultColorB: Int = 255    
+    private var defaultColorB: Int = 255
+    private var defaultBgColorR: Int = 255
+    private var defaultBgColorG: Int = 255
+    private var defaultBgColorB: Int = 255  
     private var typeface: Int = 0
     private var fytData: Int = 1
     private var statusButtonColor = "#FFFFFF"
@@ -94,11 +112,11 @@ class MainActivity : AppCompatActivity() {
     private var autostart: Boolean = false
     private var allPermissionsGranted: Boolean = false
     private val atomicInitialized = AtomicBoolean(false)
+    private val storageHelper = SimpleStorageHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)   
-        //this.context = this
-
+        
         // Display values
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -114,22 +132,45 @@ class MainActivity : AppCompatActivity() {
         width = settings.getInt("width", widthPercentage)
         numUp = settings.getInt("up", 0)
         numDown = settings.getInt("down", 0)
+        ttfNumUp = settings.getInt("ttf_up", 0)
+        ttfNumDown = settings.getInt("ttf_down", 0)
         size = settings.getInt("size", 16)
         settings.getString("color", "#FFFFFF")?.let { color ->
             statusButtonColor = color
         }
-        settings.getString("bg_color", "#FFFFFF")?.let { color ->
+        settings.getString("bg_color", "transparent")?.let { color ->
             statusBgButtonColor = color
         }
         defaultColorR = settings.getInt("red", 255)
         defaultColorG = settings.getInt("green", 255)
         defaultColorB = settings.getInt("blue", 255)
+        defaultBgColorR = settings.getInt("bg_red", 255)
+        defaultBgColorG = settings.getInt("bg_green", 255)
+        defaultBgColorB = settings.getInt("bg_blue", 255)
         typeface = settings.getInt("typeface", 0)
         fytData = settings.getInt("fytData", 1)
         displayUi = settings.getBoolean("UI", true)
         autostart = settings.getBoolean("autostart", false)
+        val filePath = settings.getString("typeface_ttf", "empty")
+        val file = File(filePath)
 
         setContentView(R.layout.activity_main)
+
+        typefaceTextView = findViewById(R.id.ttf_position)
+        typefaceLinearLayout = findViewById(R.id.ttf_buttons)
+        if (typeface == 3) {
+            if (!file.exists()) {
+                typefaceTextView.visibility = View.GONE
+                typefaceLinearLayout.visibility = View.GONE
+                typeface = 0
+                val editor = settings.edit()
+                editor.putInt("typeface", 0)
+                editor.apply()
+            } 
+        } else {
+            typefaceTextView.visibility = View.GONE
+            typefaceLinearLayout.visibility = View.GONE      
+        }
 
         // Caption margin, available margin and according button
         availableMargin = screenWidth - width
@@ -192,70 +233,55 @@ class MainActivity : AppCompatActivity() {
         mSetColorButton = findViewById(R.id.set_color)
         mSetColorButton.setBackgroundColor(Color.parseColor(statusButtonColor))
         mResetColorButton = findViewById(R.id.reset_color)
-        colorPicker = ColorPicker(this, defaultColorR, defaultColorG, defaultColorB)       
-        colorPicker.enableAutoClose()
-        colorPicker.setCallback(object : ColorPickerCallback {
-            override fun onColorChosen(@ColorInt color: Int) {
-                val editor = settings.edit()
-                editor.putString("color", String.format("#%06X", (0xFFFFFF and color)))
-                editor.putInt("red", Color.red(color))
-                editor.putInt("green", Color.green(color))
-                editor.putInt("blue", Color.blue(color))
-                editor.apply()
-                mSetColorButton.setBackgroundColor(color)
-                // Show toast
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.toast, findViewById(R.id.toast_layout))
-                val text = layout.findViewById<TextView>(R.id.text)
-                val message = "Status color has been set! \nPause/play media or change \ncurrent track to see the result."
-                text.text = message
-                val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
-                toast.view = layout
-                toast.show()
-            }
-        })
 
         // Background color picker
         mSetBgColorButton = findViewById(R.id.set_bg_color)
         mSetBgColorButton.setBackgroundColor(returnColor(statusBgButtonColor))
         mResetBgColorButton = findViewById(R.id.reset_bg_color)
-        bgColorPicker = ColorPicker(this, defaultColorR, defaultColorG, defaultColorB)       
-        bgColorPicker.enableAutoClose()
-        bgColorPicker.setCallback(object : ColorPickerCallback {
-            override fun onColorChosen(@ColorInt color: Int) {
-                val editor = settings.edit()
-                editor.putString("bg_color", String.format("#%06X", (0xFFFFFF and color)))
-                editor.putInt("bg_red", Color.red(color))
-                editor.putInt("bg_green", Color.green(color))
-                editor.putInt("bg_blue", Color.blue(color))
-                editor.apply()
-                mSetBgColorButton.setBackgroundColor(color)
-                // Show toast
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.toast, findViewById(R.id.toast_layout))
-                val text = layout.findViewById<TextView>(R.id.text)
-                val message = "Background color has been set! \nPause/play media or change \ncurrent track to see the result."
-                text.text = message
-                val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
-                toast.view = layout
-                toast.show()
-            }
-        })
 
         // Typeface
         mNormalButton = findViewById(R.id.normal_button)        
         mItalicButton = findViewById(R.id.italic_button)
         mBoldButton = findViewById(R.id.bold_button)
+        mTtfButton = findViewById(R.id.ttf_button)
         when (typeface) {
             0 -> {
-                typefaceButtons(Color.GREEN, Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"))
+                typefaceButtons(Color.GREEN, Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"))
             }
             2 -> {
-                typefaceButtons(Color.parseColor("#D6C08A"), Color.GREEN, Color.parseColor("#D6C08A"))
+                typefaceButtons(Color.parseColor("#D6C08A"), Color.GREEN, Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"))
             }
             1 -> {
-                typefaceButtons(Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.GREEN)
+                typefaceButtons(Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.GREEN, Color.parseColor("#D6C08A"))
             }
+            3 -> {
+                typefaceButtons(Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.GREEN)
+            }           
+        }
+
+        storageHelper.onFileSelected = { requestCode, files ->            
+            typefaceTextView.visibility = View.VISIBLE
+            typefaceLinearLayout.visibility = View.VISIBLE 
+            saveInt("typeface", 3)
+            typefaceButtons(Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.GREEN)
+            val editor = settings.edit()
+            editor.putString("typeface_ttf", (files[0].getAbsolutePath(this)).toString())
+            editor.apply()
+        }
+
+        // ttf height
+        mTtfUpButton = findViewById(R.id.ttf_up_button)        
+        mTtfCenterButton = findViewById(R.id.ttf_center_button)
+        mTtfDownButton = findViewById(R.id.ttf_down_button)
+        if (ttfNumUp > 0) {
+            mTtfUpButton.text = getString(R.string.ttf_up_var, "$ttfNumUp")
+            mTtfDownButton.setText(R.string.ttf_down)           
+        } else if (ttfNumDown > 0){
+            mTtfDownButton.text = getString(R.string.ttf_down_var, "$ttfNumDown")
+            mTtfUpButton.setText(R.string.ttf_up)
+        } else if (ttfNumUp == 0 && ttfNumDown == 0) {
+            mTtfUpButton.text = "0"
+            mTtfDownButton.text = "0"   
         }
 
         // Fyt title type
@@ -283,6 +309,7 @@ class MainActivity : AppCompatActivity() {
         mBatteryButton = findViewById(R.id.battery_optimization_button)
         mNotificationButton = findViewById(R.id.notification_listener_button)
         mDrawOverAppsButton = findViewById(R.id.draw_over_apps_button)
+        mStoragePermissionsButton = findViewById(R.id.storage_permissions_button)
 
         // Permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -349,6 +376,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setColorButton(v: View?) {
+        colorPicker = ColorPicker(this, defaultColorR, defaultColorG, defaultColorB)       
+        colorPicker.enableAutoClose()
+        colorPicker.setCallback(object : ColorPickerCallback {
+            override fun onColorChosen(@ColorInt color: Int) {
+                defaultColorR = Color.red(color)
+                defaultColorG = Color.green(color)
+                defaultColorB = Color.blue(color)
+                val editor = settings.edit()
+                editor.putString("color", String.format("#%06X", (0xFFFFFF and color)))
+                editor.putInt("red", Color.red(color))
+                editor.putInt("green", Color.green(color))
+                editor.putInt("blue", Color.blue(color))
+                editor.apply()
+                mSetColorButton.setBackgroundColor(color)
+
+                // Show toast
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.toast, findViewById(R.id.toast_layout))
+                val text = layout.findViewById<TextView>(R.id.text)
+                val message = "Status color has been set! \nPause/play media or change \ncurrent track to see the result."
+                text.text = message
+                val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
+                toast.view = layout
+                toast.show()
+            }
+        })
         colorPicker.show()
     }
 
@@ -356,7 +409,7 @@ class MainActivity : AppCompatActivity() {
         mSetColorButton.setBackgroundColor(Color.parseColor("#FFFFFF"))
         defaultColorR = 255
         defaultColorG = 255
-        defaultColorB = 255  
+        defaultColorB = 255
         val editor = settings.edit()
         editor.putString("color", "#FFFFFF")
         editor.putInt("red", 255)
@@ -366,26 +419,52 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setBgButton(v: View?) {
+        bgColorPicker = ColorPicker(this, defaultBgColorR, defaultBgColorG, defaultBgColorB)
+        bgColorPicker.enableAutoClose()
+        bgColorPicker.setCallback(object : ColorPickerCallback {
+            override fun onColorChosen(@ColorInt color: Int) {
+                defaultBgColorR = Color.red(color)
+                defaultBgColorG = Color.green(color)
+                defaultBgColorB = Color.blue(color)
+                val editor = settings.edit()
+                editor.putString("bg_color", String.format("#%06X", (0xFFFFFF and color)))
+                editor.putInt("bg_red", Color.red(color))
+                editor.putInt("bg_green", Color.green(color))
+                editor.putInt("bg_blue", Color.blue(color))
+                editor.apply()
+                mSetBgColorButton.setBackgroundColor(color)
+
+                // Show toast
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.toast, findViewById(R.id.toast_layout))
+                val text = layout.findViewById<TextView>(R.id.text)
+                val message = "Background color has been set! \nPause/play media or change \ncurrent track to see the result."
+                text.text = message
+                val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
+                toast.view = layout
+                toast.show()
+            }
+        })
         bgColorPicker.show()
     }
 
     fun resetBgButton(v: View?) {
         mSetBgColorButton.setBackgroundColor(Color.TRANSPARENT)
-        defaultColorR = 255
-        defaultColorG = 255
-        defaultColorB = 255  
+        defaultBgColorR = 255
+        defaultBgColorG = 255
+        defaultBgColorB = 255
         val editor = settings.edit()
         editor.putString("bg_color", "transparent")
-        editor.putInt("red", 255)
-        editor.putInt("green", 255)
-        editor.putInt("blue", 255)
+        editor.putInt("bg_red", 255)
+        editor.putInt("bg_green", 255)
+        editor.putInt("bg_blue", 255)
         editor.apply()
     }
 
     private fun returnColor(colorString: String): Int {
-        if (colorString == "transparent") {
-            return Color.TRANSPARENT
-        } else return Color.parseColor(colorString)
+        return if (colorString == "transparent") {
+            Color.TRANSPARENT
+        } else Color.parseColor(colorString)
     }
 
     fun upButton(v: View?) {
@@ -458,23 +537,85 @@ class MainActivity : AppCompatActivity() {
 
     fun normalButton(v: View?) {
         saveInt("typeface", 0)
-        typefaceButtons(Color.GREEN, Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"))
+        typefaceButtons(Color.GREEN, Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"))            
+        typefaceTextView.visibility = View.GONE
+        typefaceLinearLayout.visibility = View.GONE  
     }
 
     fun italicButton(v: View?) {
         saveInt("typeface", 2)
-        typefaceButtons(Color.parseColor("#D6C08A"), Color.GREEN, Color.parseColor("#D6C08A"))
+        typefaceButtons(Color.parseColor("#D6C08A"), Color.GREEN, Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"))            
+        typefaceTextView.visibility = View.GONE
+        typefaceLinearLayout.visibility = View.GONE  
     }
 
     fun boldButton(v: View?) {
         saveInt("typeface", 1)
-        typefaceButtons(Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.GREEN)
+        typefaceButtons(Color.parseColor("#D6C08A"), Color.parseColor("#D6C08A"), Color.GREEN, Color.parseColor("#D6C08A"))            
+        typefaceTextView.visibility = View.GONE
+        typefaceLinearLayout.visibility = View.GONE  
     }
 
-    private fun typefaceButtons(normal: Int, italic: Int, bold: Int) {
+    fun ttfButton(v: View?) {
+        if (isStoragePermissionsGranted()) {
+            storageHelper.openFilePicker(filterMimeTypes = arrayOf("font/ttf"))
+        } else {
+            checkStoragePermissions()
+        }
+    }
+
+    private fun typefaceButtons(normal: Int, italic: Int, bold: Int, ttf: Int) {
         mNormalButton.setBackgroundColor(normal)
         mItalicButton.setBackgroundColor(italic)
         mBoldButton.setBackgroundColor(bold)
+        mTtfButton.setBackgroundColor(ttf)
+    }
+
+    fun ttfUpButton(v: View?) {
+        if (settings.getInt("ttf_up", 0) != 0) {
+            ttfNumUp = settings.getInt("ttf_up", 0)
+        }
+        if (ttfNumDown > 0) {
+            ttfNumDown--
+            mTtfDownButton.text = getString(R.string.ttf_down_var, "$ttfNumDown")
+        } else if (ttfNumDown == 0 && ttfNumUp < 100) {
+            ttfNumUp++
+            mTtfUpButton.text = getString(R.string.ttf_up_var, "$ttfNumUp")
+            mTtfDownButton.setText(R.string.ttf_down)
+        }
+        val editor = settings.edit()
+        editor.putInt("ttf_up", ttfNumUp)
+        editor.putInt("ttf_down", ttfNumDown)
+        editor.apply()
+    }
+
+    fun ttfCenterButton(v: View?) {
+        ttfNumUp = 0
+        ttfNumDown = 0
+        val editor = settings.edit()
+        editor.putInt("ttf_up", ttfNumUp)
+        editor.putInt("ttf_down", ttfNumDown)
+        editor.apply()
+        mTtfUpButton.text = "0"
+        mTtfDownButton.text = "0"
+    }
+
+    fun ttfDownButton(v: View?) {
+        if (settings.getInt("ttf_down", 0) != 0) {
+            ttfNumDown = settings.getInt("ttf_down", 0)
+        }
+        if (ttfNumUp > 0) {
+            ttfNumUp--
+            mTtfUpButton.text = getString(R.string.ttf_up_var, "$ttfNumUp")
+        } else if (ttfNumUp == 0 && ttfNumDown < 100) {
+            ttfNumDown++
+            mTtfDownButton.text = getString(R.string.ttf_down_var, "$ttfNumDown")
+            mTtfUpButton.setText(R.string.ttf_up)
+        }
+        val editor = settings.edit()
+        editor.putInt("ttf_up", ttfNumUp)
+        editor.putInt("ttf_down", ttfNumDown)
+        editor.apply()
     }
 
     fun setFytMetaButton(v: View?) {
@@ -553,6 +694,10 @@ class MainActivity : AppCompatActivity() {
         checkOverlayPermission()
     }
 
+    fun storagePermissionsButton(v: View?) {
+        checkStoragePermissions()
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -565,6 +710,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             2 -> {
+                checkStoragePermissions()
                 checkBatteryPermission()
                 checkNotificationPermission()
                 checkOverlayPermission()
@@ -580,10 +726,10 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
+    /*override fun onUserLeaveHint() {
         if (allPermissionsGranted) onBackPressed()
-    }
+        super.onUserLeaveHint()
+    }*/
 
     @SuppressLint("BatteryLife")
     fun checkBatteryPermission() {
@@ -625,6 +771,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun isStoragePermissionsGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            val write = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            val read = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+
+            read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun checkStoragePermissions() {
+        if (!isStoragePermissionsGranted()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                try {
+                    val intent = Intent().apply {
+                        action = Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+                        data = Uri.fromParts("package", packageName, null)
+                    }
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    val intent = Intent().apply {
+                        action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                    }
+                    startActivity(intent)
+                }
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ),
+                    3
+                )
+            }
+        }
+    }
+
     private val runTask = object : Runnable {
         override fun run() {
             val pm = getSystemService(POWER_SERVICE) as PowerManager
@@ -632,7 +817,8 @@ class MainActivity : AppCompatActivity() {
             if ((pm.isIgnoringBatteryOptimizations(packageName)
                 && Settings.canDrawOverlays(this@MainActivity)) 
                 && ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
-                && notificationListenerString.contains(packageName))
+                && notificationListenerString.contains(packageName)
+                && isStoragePermissionsGranted())
             {
                 allPermissionsGranted = true
             } 
@@ -694,7 +880,15 @@ class MainActivity : AppCompatActivity() {
                 mDrawOverAppsButton.setBackgroundColor(Color.GREEN)
                 mDrawOverAppsButton.isEnabled = false
             }
+
+            if (!isStoragePermissionsGranted()) {
+                mStoragePermissionsButton.setBackgroundColor(Color.RED)
+            } else {
+                mStoragePermissionsButton.setBackgroundColor(Color.GREEN)
+                mStoragePermissionsButton.isEnabled = false
+            }
             handlerBtn.postDelayed(this, 50)
         }
     }
 }
+

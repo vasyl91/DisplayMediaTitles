@@ -445,7 +445,7 @@
                         android:text="@string/normal"
                         android:textColor="@color/black"
                         android:textSize="12sp"
-                        android:minWidth="120dp"
+                        android:minWidth="80dp"
                         android:layout_width="wrap_content"
                         android:minHeight="52dp"
                         android:layout_height="wrap_content"
@@ -461,7 +461,7 @@
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         android:textStyle="italic"
-                        android:minWidth="120dp"
+                        android:minWidth="80dp"
                         android:layout_width="wrap_content"
                         android:minHeight="52dp"
                         android:layout_height="wrap_content"
@@ -477,7 +477,7 @@
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        android:minWidth="120dp"
+                        android:minWidth="80dp"
                         android:layout_width="wrap_content"
                         android:minHeight="52dp"
                         android:layout_height="wrap_content"
@@ -486,6 +486,87 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:onClick="boldButton" />
+
+                    <Button
+                        android:id="@+id/ttf_button"
+                        android:text="@string/ttf"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:minWidth="80dp"
+                        android:layout_width="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="7dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:onClick="ttfButton" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/ttf_position"
+                    android:text="@string/ttf_position"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginStart="20dp"
+                    android:singleLine="true" />
+
+                <LinearLayout android:id="@+id/ttf_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:background="#F8EECF"
+                    android:orientation="horizontal"
+                    android:gravity="center" >
+
+                    <Button
+                        android:id="@+id/ttf_up_button"
+                        android:textColor="@color/black"
+                        android:text="@string/ttf_up_var"
+                        android:textSize="15sp"
+                        android:minWidth="120dp"
+                        android:layout_width="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="7dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:onClick="ttfUpButton" />
+
+                    <Button
+                        android:id="@+id/ttf_center_button"
+                        android:textColor="@color/black"
+                        android:text="@string/ttf_center"
+                        android:textSize="15sp"
+                        android:minWidth="120dp"
+                        android:layout_width="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="7dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:onClick="ttfCenterButton" />
+
+                    <Button
+                        android:id="@+id/ttf_down_button"
+                        android:textColor="@color/black"
+                        android:text="@string/ttf_down_var"
+                        android:textSize="15sp"
+                        android:minWidth="120dp"
+                        android:layout_width="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="7dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:onClick="ttfDownButton" />
 
                 </LinearLayout>
 
@@ -699,6 +780,21 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:onClick="drawOverAppsButton" />
+            
+        <Button
+            android:id="@+id/storage_permissions_button"
+            android:text="@string/storage_permissions"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:minWidth="300dp"
+            android:layout_width="wrap_content"
+            android:minHeight="48dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:onClick="storagePermissionsButton" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

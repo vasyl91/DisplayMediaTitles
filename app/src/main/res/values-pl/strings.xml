@@ -7,8 +7,10 @@
     <string name="available_margin">%1$s(dostępne: %2$s):</string>
     <string name="set_width">Ustaw szerokość</string>
     <string name="available_width">%1$s(dostępne: %2$s):</string>
+
     <string name="set_font_color">Ustaw</string>
     <string name="reset_font_color">Resetuj</string>
+
     <string name="position">Wysokość napisów:</string>
     <string name="center">Środkuj</string>
     <string name="up">Góra</string>
@@ -17,15 +19,26 @@
     <string name="down_var">%1$s</string>
     <string name="font_size">Wielkość czcionki (max. 30):</string>
     <string name="set_size">Ustaw wielkość</string>
+
     <string name="font_color">Kolor czcionki:</string>
     <string name="bg_color">Kolor tła:</string>
+
     <string name="typeface">Czcionka:</string>
     <string name="normal">Normalna</string>
     <string name="italic">Kursywa</string>
     <string name="bold">Pogrubienie</string>
+    <string name="ttf">TTF</string>
+    <string name="ttf_position">Wysokość TTF:</string>
+    <string name="ttf_center">Środkuj</string>
+    <string name="ttf_up">Góra</string>
+    <string name="ttf_up_var">%1$s</string>
+    <string name="ttf_down">Dół</string>
+    <string name="ttf_down_var">%1$s</string>
+
     <string name="fyt_display">Dane z odtwarzacza FYT:</string>
     <string name="fyt_meta">Metadane</string>
     <string name="fyt_file">Tytuł pliku</string>
+
     <string name="display_ui">Wyświetlaj interfejs:</string>
     <string name="autostart">Autostart:</string>
 
@@ -39,6 +52,7 @@
     <string name="notification_listener">Dostęp do powiadomień</string>
     <string name="battery_optimization">Optymalizacja baterii</string>
     <string name="draw_over_apps">Wyświetlanie nad aplikacjami</string>
+    <string name="storage_permissions">Dostęp do danych</string>
 
     <string name="materialcolorpicker__errHex">Nieprawidłowy format Hex</string>
     <string name="materialcolorpicker__inputColor">Kolor: </string>

@@ -7,25 +7,39 @@
     <string name="available_margin">%1$s(available: %2$s):</string>
     <string name="set_width">Set width</string>
     <string name="available_width">%1$s(available: %2$s):</string>
+
     <string name="set_font_color">Set</string>
     <string name="reset_font_color">Reset</string>
+
     <string name="position">Caption height:</string>
     <string name="center">Center</string>
     <string name="up">Up</string>
     <string name="up_var">%1$s</string>
     <string name="down">Down</string>
     <string name="down_var">%1$s</string>
+
     <string name="font_size">Font size (max. 30):</string>
     <string name="set_size">Set size</string>
+
     <string name="font_color">Font color:</string>
     <string name="bg_color">Background color:</string>
+
     <string name="typeface">Typeface:</string>
     <string name="normal">Normal</string>
     <string name="italic">Italic</string>
     <string name="bold">Bold</string>
+    <string name="ttf">TTF</string>
+    <string name="ttf_position">TTF height:</string>
+    <string name="ttf_center">Center</string>
+    <string name="ttf_up">Up</string>
+    <string name="ttf_up_var">%1$s</string>
+    <string name="ttf_down">Down</string>
+    <string name="ttf_down_var">%1$s</string>
+
     <string name="fyt_display">Get FYT media data from:</string>
     <string name="fyt_meta">Metadata</string>
     <string name="fyt_file">File name</string>
+
     <string name="display_ui">Display UI:</string>
     <string name="autostart">Start on boot:</string>
 
@@ -39,6 +53,7 @@
     <string name="notification_listener">Notification listener</string>
     <string name="battery_optimization">Battery optimization</string>
     <string name="draw_over_apps">Draw over other apps</string>
+    <string name="storage_permissions">Storage permissions</string>
 
     <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
     <string name="materialcolorpicker__inputColor">Color: </string>

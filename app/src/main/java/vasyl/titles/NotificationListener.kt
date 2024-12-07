@@ -10,6 +10,7 @@ import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.graphics.Color
 import android.graphics.PixelFormat
+import android.graphics.Typeface
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -21,6 +22,7 @@ import android.os.Handler
 import android.os.Looper
 import android.service.notification.NotificationListenerService
 import android.text.TextUtils
+import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -40,6 +42,8 @@ class NotificationListener : NotificationListenerService() {
     
     private var up: Int = 0
     private var down: Int = 0
+    private var ttfUp: Float = 0.0f
+    private var ttfDown: Float = 0.0f
     private var size: Int = 16
     private var width: Int = 900
     private var marginLeft: Int = 255
@@ -49,7 +53,7 @@ class NotificationListener : NotificationListenerService() {
     private var song: String? = ""
     private var artist: String? = ""
     private var statusColor = "#FFFFFF"
-    private var statusBgColor = "#FFFFFF00"
+    private var statusBgColor = "transparent"
     private var paused: Boolean = false
     private var statusRemoved: Boolean = false
     private var controllers: MutableList<MediaController>? = null
@@ -104,7 +108,7 @@ class NotificationListener : NotificationListenerService() {
         }
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        mediaSessionManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+        mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(sessionListener, componentName)
         controllers = mediaSessionManager.getActiveSessions(componentName)
         mediaController = pickController(controllers!!)
@@ -151,7 +155,7 @@ class NotificationListener : NotificationListenerService() {
                     setStatus(1)             
                 }
                 if (!fytState && fytSet) {
-                    val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                    val am = context.getSystemService(AUDIO_SERVICE) as AudioManager
                     if (!am.isMusicActive) {
                         removeWindowView()                        
                     }
@@ -178,18 +182,18 @@ class NotificationListener : NotificationListenerService() {
 
     private val runTask = object : Runnable {
         override fun run() {
-            val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val am = context.getSystemService(AUDIO_SERVICE) as AudioManager
             if (!am.isMusicActive || PhoneListener.CALLING) {
                 if (!fytState) {
                     removeView()
                 }  
             }
-            if (am.isMusicActive && ll == null) {
+            if (am.isMusicActive && ll == null && !PhoneListener.CALLING) {
                 // onActiveSessionsChanged switches between sources flawlessly as long as music continues to play,
                 // it doesn't switch when user had paused previous music source before playing the new one
                 checkActiveSessions()
             }
-            if (am.isMusicActive && fytState) {
+            if (am.isMusicActive && fytState && !PhoneListener.CALLING) {
                 // sometimes when fyt player is still active MediaController looses active session
                 checkActiveSessions()
             }
@@ -233,7 +237,6 @@ class NotificationListener : NotificationListenerService() {
             }
         }
 
-        @Suppress("KotlinConstantConditions")
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
             if (meta == null) {
@@ -269,8 +272,10 @@ class NotificationListener : NotificationListenerService() {
             size = settings.getInt("size", 16)
             typefaceInt = settings.getInt("typeface", 0)
             settings.getString("color", "#FFFFFF")?.let { color -> statusColor = color }
-            settings.getString("bg_color", "#FFFFFF00")?.let { color -> statusBgColor = color }
+            settings.getString("bg_color", "transparent")?.let { color -> statusBgColor = color }
             fytData = settings.getInt("fytData", 1)
+            ttfUp = (settings.getInt("ttf_up", 0)).toFloat()
+            ttfDown = (settings.getInt("ttf_down", 0)).toFloat()
 
             var numUp = 0
             if (down > 0) {
@@ -279,14 +284,27 @@ class NotificationListener : NotificationListenerService() {
                 numUp = -abs(up)
             } else if (up == 0 && down == 0) {
                 numUp = 0
-            }        
+            }    
+            var ttfHeight = 0.0f
+            if (ttfDown > 0.0f) {
+                ttfHeight = (abs(ttfDown)).toFloat()
+            } else if (ttfUp > 0.0f) {
+                ttfHeight = (-abs(ttfUp)).toFloat()
+            } else if (ttfUp == 0.0f && ttfDown == 0.0f) {
+                ttfHeight = 0.0f
+            }      
             try {
                 // Status bar
-                val height = if (size > 22) statusBarHeight + size else statusBarHeight
-
+                val height = if (typefaceInt == 3) {
+                    statusBarHeight + (size * 2.5f)
+                } else {
+                    if (size > 22) {
+                        statusBarHeight + size
+                    } else statusBarHeight
+                }
                 val parameters = WindowManager.LayoutParams(
                     width,
-                    height,
+                    height.toInt(),
                     overlayParam,
                     WindowManager.LayoutParams.TYPE_WALLPAPER or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                     PixelFormat.TRANSLUCENT
@@ -303,20 +321,36 @@ class NotificationListener : NotificationListenerService() {
                         LinearLayout.LayoutParams.MATCH_PARENT
                     )
                 }
-
+                
                 val tv = TextView(this).apply {
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
                     setTextColor(Color.parseColor(statusColor))
-                    textSize = (size).toFloat()
-                    setTypeface(null, typefaceInt)
+                    textSize = (size).toFloat()                   
+                    if (typefaceInt != 3) {
+                        setTypeface(null, typefaceInt)
+                    } else if (typefaceInt == 3) {
+                        val filePath = settings.getString("typeface_ttf", "empty")
+                        val file = File(filePath)
+                        if (file.exists()) {
+                            val typeface = Typeface.createFromFile(filePath)
+                            setTypeface(typeface)
+                            y = ttfHeight
+                        } else {
+                            typefaceInt = 0
+                            val editor = settings.edit()
+                            editor.putInt("typeface", 0)
+                            editor.apply()
+                        }
+                    }
                     gravity = Gravity.CENTER
                     ellipsize = TextUtils.TruncateAt.MARQUEE
                     marqueeRepeatLimit = -1
                     isSingleLine = true
                     isSelected = true
+
                 }
 
                 if (fytState && fytAllowed && (mediaSource == 0 || mediaSource == 1)) {
@@ -377,9 +411,9 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun returnColor(colorString: String): Int {
-        if (colorString == "transparent") {
-            return Color.TRANSPARENT
-        } else return Color.parseColor(colorString)
+        return if (colorString == "transparent") {
+            Color.TRANSPARENT
+        } else Color.parseColor(colorString)
     }
 
     fun checkActiveSessions() {

@@ -13,7 +13,8 @@ App requires five permissions:
 * Display over other apps to properly display titles.
 * Battery optimization to keep service alive.
 * Phone state to properly remove view on phone calls.
-* Call logs to open app with dialer's "secret code"
+* Call logs to open app with dialer's "secret code".
+* Storage to use file picker and .ttf fonts.
 
 Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you have a problem with Restricted Setting pop-up (for non-system apps).
 
@@ -44,7 +45,7 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 
 * Setting view parameters:
 
-	Very simple but intuitive layout allows to set left margin and width of the view depending on the device display width. It also provides following features: caption height, font size, color and typeface. Try it with long titles for proper setting.
+	Very simple but intuitive layout allows to set left margin and width of the view depending on the device display width. It also provides following features: caption height, font size, color and typeface. App also supports .ttf fonts (since 1.0.7). Try it with long titles for proper setting.
 
 * Displaying FYT player media titles:
 
