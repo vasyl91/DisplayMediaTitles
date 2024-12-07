@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     private var typeface: Int = 0
     private var fytData: Int = 1
     private var statusButtonColor = "#FFFFFF"
-    private var statusBgButtonColor = "#FFFFFF"
+    private var statusBgButtonColor = "transparent"
     private var displayUi: Boolean = true
     private var autostart: Boolean = false
     private var allPermissionsGranted: Boolean = false
