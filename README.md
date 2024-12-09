@@ -1,6 +1,6 @@
 # Display Media Titles for FYT 7862/8581
 
-Android app for FYT displaying media titles on status bar. It displays also artist name if it's present in the metadata. Should work on Android 8 and above. Tested on Android 10 on FYT UIS7862 and on Android 14 on phone.
+Android app for FYT 7862/8581 displaying media titles on status bar. It displays also artist name if it's present in the metadata. Should work on Android 8 and above. The app was tested on Android 10 on FYT UIS7862 and on Android 14 on phone and should work on most of the devices, however it was created exclusively for FYT 7862/8581 so it might misbehave on other devices which I DO NOT SUPPORT.
 
 App works with the players that use MediaController which means that it should get along with most of the available music apps. 
 
