@@ -67,7 +67,7 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 
 ## Generating app in Android Studio
 
-Clone repository and use `keystore.jks` located in `DisplayMediaTitles\app`. Choose exisiting android key alias with password `android`. 
+Clone repository and use `keystore.jks` located in `Display-Media-Titles\app`. Choose exisiting android key alias with password `android`. 
 For non-system app remove `android:sharedUserId="android.uid.system"` from `AndroidManifest.xml`.
 
 FYT uses standard Google keystore, if you want to generate app that will work as a system app on OS that has been signed with different keystore then make sure to use that keystore.
