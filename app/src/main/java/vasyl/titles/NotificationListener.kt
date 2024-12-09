@@ -52,6 +52,7 @@ class NotificationListener : NotificationListenerService() {
     private var statusBarHeight: Int = 0
     private var song: String? = ""
     private var artist: String? = ""
+    private var displayArtist: Boolean = true
     private var statusColor = "#FFFFFF"
     private var statusBgColor = "transparent"
     private var paused: Boolean = false
@@ -276,6 +277,7 @@ class NotificationListener : NotificationListenerService() {
             fytData = settings.getInt("fytData", 1)
             ttfUp = (settings.getInt("ttf_up", 0)).toFloat()
             ttfDown = (settings.getInt("ttf_down", 0)).toFloat()
+            displayArtist = settings.getBoolean("artist_box", true)
 
             var numUp = 0
             if (down > 0) {
@@ -389,7 +391,7 @@ class NotificationListener : NotificationListenerService() {
                     }                   
                 }   
 
-                if (artist != null) {
+                if (artist != null && displayArtist == true) {
                     if (artist!!.isNotEmpty()) {
                         if (!song!!.contains(artist!!) && artist != "Unknown") {
                             tv.text = getString(R.string.artist_and_song_str, "$artist", "$song") + getString(R.string.space)

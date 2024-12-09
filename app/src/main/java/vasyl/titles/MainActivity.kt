@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mDisplayUI: CheckBox
     private lateinit var mAutostart: CheckBox
+    private lateinit var mDisplayArtist: CheckBox
 
     private lateinit var mPhoneStateButton: Button
     private lateinit var mOutgoingCalls: Button
@@ -109,6 +110,7 @@ class MainActivity : AppCompatActivity() {
     private var statusButtonColor = "#FFFFFF"
     private var statusBgButtonColor = "transparent"
     private var displayUi: Boolean = true
+    private var displayArtist: Boolean = true
     private var autostart: Boolean = false
     private var allPermissionsGranted: Boolean = false
     private val atomicInitialized = AtomicBoolean(false)
@@ -150,6 +152,7 @@ class MainActivity : AppCompatActivity() {
         typeface = settings.getInt("typeface", 0)
         fytData = settings.getInt("fytData", 1)
         displayUi = settings.getBoolean("UI", true)
+        displayArtist = settings.getBoolean("artist_box", true)
         autostart = settings.getBoolean("autostart", false)
         val filePath = settings.getString("typeface_ttf", "empty")
         val file = File(filePath)
@@ -302,6 +305,10 @@ class MainActivity : AppCompatActivity() {
         // Start app on boot
         mAutostart = findViewById(R.id.autostart_app)
         mAutostart.isChecked = autostart
+
+        // Display UI CheckBox
+        mDisplayArtist = findViewById(R.id.display_artist_box)
+        mDisplayArtist.isChecked = displayArtist
 
         // Required permissions' buttons
         mPhoneStateButton = findViewById(R.id.read_phone_state_button)
@@ -643,7 +650,7 @@ class MainActivity : AppCompatActivity() {
             editor.commit()
             mDisplayUI.isChecked = true
         }
-    }
+    }    
 
     fun setAutostart(v: View?) {
         val editor = settings.edit()
@@ -659,6 +666,22 @@ class MainActivity : AppCompatActivity() {
             mAutostart.isChecked = true
         }
     }
+
+    fun setDisplayArtist(v: View?) {
+        val editor = settings.edit()
+        if (!mDisplayArtist.isChecked) {
+            displayArtist = false
+            editor.putBoolean("artist_box", false)
+            editor.apply()
+            mDisplayArtist.isChecked = false
+        } else {
+            displayArtist = true
+            editor.putBoolean("artist_box", true)
+            editor.commit()
+            mDisplayArtist.isChecked = true
+        }
+    }
+    
     fun phoneStateButton(v: View?) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             goToSettings()

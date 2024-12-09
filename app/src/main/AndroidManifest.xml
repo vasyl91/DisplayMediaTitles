@@ -37,7 +37,8 @@
         tools:targetApi="34"
         android:hardwareAccelerated="true"
         android:usesCleartextTraffic="true"
-        android:enableOnBackInvokedCallback="true" >
+        android:enableOnBackInvokedCallback="true"
+        android:requestLegacyExternalStorage="true" >
         <activity
             android:name=".MainActivity"
             android:excludeFromRecents="true"

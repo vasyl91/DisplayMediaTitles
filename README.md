@@ -45,7 +45,13 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 
 * Setting view parameters:
 
-	Very simple but intuitive layout allows to set left margin and width of the view depending on the device display width. It also provides following features: caption height, font size, color and typeface. App also supports .ttf fonts (since 1.0.7). Try it with long titles for proper setting.
+	Very simple but intuitive layout allows to set the left margin and width of the view depending on the device display width. It also provides following features: caption height, font size, color and typeface. App also supports .ttf fonts (since 1.0.7). Try it with long titles for proper setting.
+
+	If you encounter `Storage Access Framework is currently not available` toast, then please install [DocumentsUI-10.apk](https://github.com/vasyl91/Display-Media-Titles/releases/download/v1.0.8/DocumentsUI-10.apk) (credit to [FYTuis7862BinRepo](https://github.com/hvdwolf/FYTuis7862BinRepo) by [hvdwolf](https://github.com/hvdwolf))
+	DocumentsUI-10.apk is meant for FYT devices and probably won't get along with phones. If you encounter it on the phone you'll have to find according app yourself.
+
+	[<img src="./images/11.png" width="50%">](./images/11.png)
+
 
 * Displaying FYT player media titles:
 
@@ -70,6 +76,7 @@ FYT uses standard Google keystore, if you want to generate app that will work as
 [<img src="./images/4.png" width="50%">](./images/4.png)[<img src="./images/5.png" width="50%">](./images/5.png)
 [<img src="./images/6.png" width="50%">](./images/6.png)[<img src="./images/7.png" width="50%">](./images/7.png)
 [<img src="./images/8.png" width="50%">](./images/8.png)[<img src="./images/9.png" width="50%">](./images/9.png)
+[<img src="./images/10.png" width="50%">](./images/10.png)[<img src="./images/12.png" width="50%">](./images/12.png)
 
 ## Modified Launchers allowing to display stock player media data
 
