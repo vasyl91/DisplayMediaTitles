@@ -13,8 +13,8 @@ App requires five permissions:
 * Display over other apps to properly display titles.
 * Battery optimization to keep service alive.
 * Phone state to properly remove view on phone calls.
-* Call logs to open app with dialer's "secret code".
-* Storage to use file picker and .ttf fonts.
+* Call logs to open app with the dialer's "secret code".
+* Storage to use the file picker and .ttf fonts.
 
 Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you have a problem with Restricted Setting pop-up (for non-system apps).
 
