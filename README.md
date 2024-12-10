@@ -62,11 +62,6 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 
 	Why not to implement such broadcast directly in the music player instead of modifying the launcher? Well, I'm not an expert in modifying smali files, there is also plenty of versions of this music app, moreover stock player stopped working everytime I had tampered with it, not to mention that every test required a trip to garage. If you figure it out, please let me know!
 
-
-	[<img src="./images/1.png" width="60%">](./images/1.png)
-
-	[<img src="./images/2.png" width="30%">](./images/2.png)[<img src="./images/3.png" width="30%">](./images/3.png)
-
 ## Generating app in Android Studio
 
 Clone repository and use `keystore.jks` located in `Display-Media-Titles\app`. Choose exisiting android key alias with password `android`. 
@@ -76,10 +71,11 @@ FYT uses standard Google keystore, if you want to generate app that will work as
 
 ## Gallery
 
+[<img src="./images/10.png" width="50%">](./images/10.png)[<img src="./images/3.png" width="50%">](./images/3.png)
 [<img src="./images/4.png" width="50%">](./images/4.png)[<img src="./images/5.png" width="50%">](./images/5.png)
 [<img src="./images/6.png" width="50%">](./images/6.png)[<img src="./images/7.png" width="50%">](./images/7.png)
 [<img src="./images/8.png" width="50%">](./images/8.png)[<img src="./images/9.png" width="50%">](./images/9.png)
-[<img src="./images/10.png" width="50%">](./images/10.png)[<img src="./images/12.png" width="50%">](./images/12.png)
+[<img src="./images/12.png" width="50%">](./images/12.png)
 
 ## Modified Launchers allowing to display stock player media data
 
