@@ -50,7 +50,8 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 	If you encounter `Storage Access Framework is currently not available` toast, then please install [DocumentsUI-10.apk](https://github.com/vasyl91/Display-Media-Titles/releases/download/v1.0.8/DocumentsUI-10.apk) (credit to [FYTuis7862BinRepo](https://github.com/hvdwolf/FYTuis7862BinRepo) by [hvdwolf](https://github.com/hvdwolf)).
 	
 	DocumentsUI-10.apk is meant for FYT devices and probably won't get along with phones. If you encounter it on the phone you'll have to find according app yourself.
-	Changing default file picker app might also come in handy. Different devices different solutions, finding them is up to you.
+	
+	Changing the dafault file picker app to the built-in app might also come in handy. Different devices different solutions, finding them is up to you.
 
 	[<img src="./images/11.png" width="50%">](./images/11.png)
 
