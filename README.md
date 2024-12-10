@@ -45,18 +45,19 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 
 * Setting view parameters:
 
-	Very simple but intuitive layout allows to set the left margin and width of the view depending on the device display width. It also provides following features: caption height, font size, color and typeface. App also supports .ttf fonts (since 1.0.7). Try it with long titles for proper setting.
+	Very simple and intuitive layout allows user to set the left margin and width of the view depending on the device display width. It also provides following features: caption height, font size, color and typeface, background color, .ttf fonts. Try it with long titles for proper setting.
 
 	If you encounter `Storage Access Framework is currently not available` toast, then please install [DocumentsUI-10.apk](https://github.com/vasyl91/Display-Media-Titles/releases/download/v1.0.8/DocumentsUI-10.apk) (credit to [FYTuis7862BinRepo](https://github.com/hvdwolf/FYTuis7862BinRepo) by [hvdwolf](https://github.com/hvdwolf)).
 	
 	DocumentsUI-10.apk is meant for FYT devices and probably won't get along with phones. If you encounter it on the phone you'll have to find according app yourself.
+	Changing default file picker app might also come in handy. Different devices different solutions, finding them is up to you.
 
 	[<img src="./images/11.png" width="50%">](./images/11.png)
 
 
 * Displaying FYT player media titles:
 
-	FYT manufacturers have designed connection between the stock music app and the launcher which depends on intents adressed for specific package. That means that there is no way to intercept the existing message. Fortunately I found a workaround by adding a broadcast to the launcher which receives and forwards that message to any app that has registered a specific receiver. And you can find such receiver in my app.
+	FYT manufacturers have designed connection between the stock music app (com.syu.music) and the launcher which depends on intents adressed for specific package. That means that there is no way to intercept the existing message. Fortunately I found a workaround by adding a broadcast to the launcher which receives and forwards that message to any app that has registered a specific receiver. And you can find such receiver in my app.
 
 	Why not to implement such broadcast directly in the music player instead of modifying the launcher? Well, I'm not an expert in modifying smali files, there is also plenty of versions of this music app, moreover stock player stopped working everytime I had tampered with it, not to mention that every test required a trip to garage. If you figure it out, please let me know!
 
