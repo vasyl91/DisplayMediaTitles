@@ -55,6 +55,8 @@ Check this [tutorial](https://www.youtube.com/watch?v=H3tnNVyCJfk) in case you h
 
 	[<img src="./images/11.png" width="50%">](./images/11.png)
 
+	Version 1.0.9 offers double view function which as the name states adds the second view making the captions not transparent and more visible. However this function still won't allow the view to appear on top of the system's views (i.e. themed launcher's status bar), only the system app allows that.
+
 
 * Displaying FYT player media titles:
 
