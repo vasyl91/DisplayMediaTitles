@@ -39,6 +39,7 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var mediaSessionManager: MediaSessionManager
     private lateinit var settings: SharedPreferences
     private lateinit var windowManager: WindowManager
+    private lateinit var windowManagerSecond: WindowManager
     
     private var up: Int = 0
     private var down: Int = 0
@@ -57,10 +58,13 @@ class NotificationListener : NotificationListenerService() {
     private var statusBgColor = "transparent"
     private var paused: Boolean = false
     private var statusRemoved: Boolean = false
+    private var doubleView: Boolean = false
     private var controllers: MutableList<MediaController>? = null
-    private var ll: LinearLayout? = null
+    private var ll: LinearLayout? = null   
+    private var llSecond: LinearLayout? = null
     private var mediaController: MediaController? = null
     private var meta: MediaMetadata? = null
+    private var mState: Int? = 0
     private val componentName = ComponentName("vasyl.titles", "vasyl.titles.NotificationListener")
 
     private var fytState: Boolean = false
@@ -93,11 +97,9 @@ class NotificationListener : NotificationListenerService() {
 
         settings = getSharedPreferences("savedPrefs", 0)    
         displayUI = settings.getBoolean("UI", true)
-        fytData = settings.getInt("fytData", 1)
 
         statusRemoved = false
         paused = false
-
         
         val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
         if (resourceId > 0) statusBarHeight = resources.getDimensionPixelSize(resourceId)
@@ -109,6 +111,7 @@ class NotificationListener : NotificationListenerService() {
         }
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        windowManagerSecond = getSystemService(WINDOW_SERVICE) as WindowManager
         mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
         mediaSessionManager.addOnActiveSessionsChangedListener(sessionListener, componentName)
         controllers = mediaSessionManager.getActiveSessions(componentName)
@@ -116,7 +119,14 @@ class NotificationListener : NotificationListenerService() {
         mediaController?.let {
             it.registerCallback(callback)
             meta = it.metadata
-            setStatus(0)
+            try {
+                mState = it.getPlaybackState()?.getState()
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+            }
+            if (meta != null && mState == PlaybackState.STATE_PLAYING) {
+                setStatus(0)
+            }
         }
 
         val phoneIntent = Intent(this, PhoneStateBroadcastReceiver::class.java)
@@ -151,7 +161,7 @@ class NotificationListener : NotificationListenerService() {
                 if (musicName!!.isNotEmpty() && musicName != "Unknown" && song != musicName && song != pathName) {
                     fytSet = false
                 } 
-                if(fytState && !fytSet && fytAllowed  && musicName!!.isNotEmpty() && musicName != "Unknown") {   
+                if(fytState && !fytSet && fytAllowed  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") {   
                     fytSet = true
                     setStatus(1)             
                 }
@@ -193,7 +203,7 @@ class NotificationListener : NotificationListenerService() {
                 // onActiveSessionsChanged switches between sources flawlessly as long as music continues to play,
                 // it doesn't switch when user had paused previous music source before playing the new one
                 checkActiveSessions()
-            }
+            }  
             if (am.isMusicActive && fytState && !PhoneListener.CALLING) {
                 // sometimes when fyt player is still active MediaController looses active session
                 checkActiveSessions()
@@ -214,6 +224,12 @@ class NotificationListener : NotificationListenerService() {
             windowManager.removeViewImmediate(it)
             ll = null
         }
+        if (doubleView) {
+            llSecond?.let {
+                windowManagerSecond.removeViewImmediate(it)
+                llSecond = null
+            }
+        }
     }
 
     private var callback: MediaController.Callback = object : MediaController.Callback() {
@@ -231,10 +247,14 @@ class NotificationListener : NotificationListenerService() {
             if (currentState == 2 && !paused) {
                 paused = true
                 if (!fytState) {
-                    removeWindowView()   
+                    removeWindowView()
                 }
             } else if (currentState == 3) {
-                setStatus(2)
+                // prevents youtube live to add view every ~second
+                var dur = meta?.getLong(MediaMetadata.METADATA_KEY_DURATION)
+                if (dur != 0.toLong() || paused) {
+                    setStatus(2)
+                }
             }
         }
 
@@ -278,6 +298,7 @@ class NotificationListener : NotificationListenerService() {
             ttfUp = (settings.getInt("ttf_up", 0)).toFloat()
             ttfDown = (settings.getInt("ttf_down", 0)).toFloat()
             displayArtist = settings.getBoolean("artist_box", true)
+            doubleView = settings.getBoolean("double_view", false)
 
             var numUp = 0
             if (down > 0) {
@@ -323,7 +344,16 @@ class NotificationListener : NotificationListenerService() {
                         LinearLayout.LayoutParams.MATCH_PARENT
                     )
                 }
-                
+                if (doubleView) {
+                    llSecond = LinearLayout(this).apply {
+                        setBackgroundColor(returnColor(statusBgColor))
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT
+                        )
+                    }
+                }
+
                 val tv = TextView(this).apply {
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -353,6 +383,40 @@ class NotificationListener : NotificationListenerService() {
                     isSingleLine = true
                     isSelected = true
 
+                }
+
+                lateinit var tvSecond: TextView
+                if (doubleView) {
+                    tvSecond = TextView(this).apply {
+                        layoutParams = ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                        setTextColor(Color.parseColor(statusColor))
+                        textSize = (size).toFloat()                   
+                        if (typefaceInt != 3) {
+                            setTypeface(null, typefaceInt)
+                        } else if (typefaceInt == 3) {
+                            val filePath = settings.getString("typeface_ttf", "empty")
+                            val file = File(filePath)
+                            if (file.exists()) {
+                                val typeface = Typeface.createFromFile(filePath)
+                                setTypeface(typeface)
+                                y = ttfHeight
+                            } else {
+                                typefaceInt = 0
+                                val editor = settings.edit()
+                                editor.putInt("typeface", 0)
+                                editor.apply()
+                            }
+                        }
+                        gravity = Gravity.CENTER
+                        ellipsize = TextUtils.TruncateAt.MARQUEE
+                        marqueeRepeatLimit = -1
+                        isSingleLine = true
+                        isSelected = true
+
+                    }
                 }
 
                 if (fytState && fytAllowed && (mediaSource == 0 || mediaSource == 1)) {
@@ -395,15 +459,28 @@ class NotificationListener : NotificationListenerService() {
                     if (artist!!.isNotEmpty()) {
                         if (!song!!.contains(artist!!) && artist != "Unknown") {
                             tv.text = getString(R.string.artist_and_song_str, "$artist", "$song") + getString(R.string.space)
+                            if (doubleView) {
+                                tvSecond.text = getString(R.string.artist_and_song_str, "$artist", "$song") + getString(R.string.space)
+                            }
                         } else {
                             tv.text = getString(R.string.song_str, "$song") + getString(R.string.space)
+                            if (doubleView) {
+                                tvSecond.text = getString(R.string.song_str, "$song") + getString(R.string.space)
+                            }
                         }                       
                     }
                 } else {
                     tv.text = getString(R.string.song_str, "$song") + getString(R.string.space)
+                    if (doubleView) {
+                        tvSecond.text = getString(R.string.song_str, "$song") + getString(R.string.space)
+                    }
                 }
                 ll?.addView(tv)
                 windowManager.addView(ll, parameters)
+                if (doubleView) {
+                    llSecond?.addView(tvSecond)
+                    windowManagerSecond.addView(llSecond, parameters)
+                }
                 statusRemoved = false
                 paused = false
             } catch (e: IllegalArgumentException) {

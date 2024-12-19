@@ -2,8 +2,10 @@ package vasyl.titles
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
@@ -78,6 +80,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mDisplayUI: CheckBox
     private lateinit var mAutostart: CheckBox
     private lateinit var mDisplayArtist: CheckBox
+    private lateinit var mDoubleViewTxt: TextView 
+    private lateinit var mDoubleView: CheckBox
 
     private lateinit var mPhoneStateButton: Button
     private lateinit var mOutgoingCalls: Button
@@ -111,6 +115,7 @@ class MainActivity : AppCompatActivity() {
     private var statusBgButtonColor = "transparent"
     private var displayUi: Boolean = true
     private var displayArtist: Boolean = true
+    private var doubleView: Boolean = true
     private var autostart: Boolean = false
     private var allPermissionsGranted: Boolean = false
     private val atomicInitialized = AtomicBoolean(false)
@@ -152,8 +157,9 @@ class MainActivity : AppCompatActivity() {
         typeface = settings.getInt("typeface", 0)
         fytData = settings.getInt("fytData", 1)
         displayUi = settings.getBoolean("UI", true)
-        displayArtist = settings.getBoolean("artist_box", true)
         autostart = settings.getBoolean("autostart", false)
+        displayArtist = settings.getBoolean("artist_box", true)
+        doubleView = settings.getBoolean("double_view", false)
         val filePath = settings.getString("typeface_ttf", "empty")
         val file = File(filePath)
 
@@ -306,9 +312,21 @@ class MainActivity : AppCompatActivity() {
         mAutostart = findViewById(R.id.autostart_app)
         mAutostart.isChecked = autostart
 
-        // Display UI CheckBox
+        // Display artist
         mDisplayArtist = findViewById(R.id.display_artist_box)
         mDisplayArtist.isChecked = displayArtist
+
+        // Double view
+        mDoubleViewTxt = findViewById(R.id.double_view_text)
+        mDoubleView = findViewById(R.id.double_view_box)
+        mDoubleView.isChecked = doubleView
+        if (isAppSystem(this)) {
+            mDoubleViewTxt.visibility = View.GONE
+            mDoubleView.visibility = View.GONE
+            val editor = settings.edit()
+            editor.putBoolean("double_view", false)
+            editor.apply()
+        }
 
         // Required permissions' buttons
         mPhoneStateButton = findViewById(R.id.read_phone_state_button)
@@ -332,6 +350,12 @@ class MainActivity : AppCompatActivity() {
         handlerBtn = Handler()
         runnableHandler.post(runTask)
         handlerBtn.post(checkBtns)
+    } 
+
+    private fun isAppSystem(context: Context): Boolean {
+        val pm = context.packageManager
+        val appInfo = pm.getApplicationInfo(context.packageName, 0)
+        return (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0 || (appInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
     }
 
     private fun saveInt(string: String?, value: Int) {
@@ -679,6 +703,21 @@ class MainActivity : AppCompatActivity() {
             editor.putBoolean("artist_box", true)
             editor.commit()
             mDisplayArtist.isChecked = true
+        }
+    }
+
+    fun setDoubleView(v: View?) {
+        val editor = settings.edit()
+        if (!mDoubleView.isChecked) {
+            doubleView = false
+            editor.putBoolean("double_view", false)
+            editor.apply()
+            mDoubleView.isChecked = false
+        } else {
+            doubleView = true
+            editor.putBoolean("double_view", true)
+            editor.commit()
+            mDoubleView.isChecked = true
         }
     }
     
